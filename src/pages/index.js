@@ -1,27 +1,29 @@
-import Paper from 'material-ui/Paper';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Divider from 'material-ui/Divider';
-import RaisedButton from 'material-ui/RaisedButton';
-import Checkbox from 'material-ui/Checkbox';
+import FlatButton from 'material-ui/FlatButton';
+import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
+import DiscoveryInput from '../components/discoveryInput';
+import { Provider } from 'react-redux'
+import InputStore from '../stores/inputStore';
 
 export default () => (
     <MuiThemeProvider>
-        <Paper>
-            <form>
-                <Checkbox label="Simple" />
-                <Checkbox label="Simple" />
-                <Divider/>
-                <Checkbox label="Simple" />
-                <Checkbox label="Simple" />
-                <Divider/>
-                <Checkbox label="Simple" />
-                <Checkbox label="Simple" />
-                <Divider/>
-                <Checkbox label="Simple" />
-                <Checkbox label="Simple" />
-                <Divider/>
-                <RaisedButton label="Discover" primary={true} />
-            </form>
-        </Paper>
+        <Card>
+            <CardHeader
+                title="Start discovery"
+                subtitle="Select components you want to take part in the discovery process"
+                actAsExpander={true}
+                showExpandableButton={true}
+            />
+            <CardText>
+                <form>
+                    <Provider store="InputStore">
+                        <DiscoveryInput />
+                    </Provider>
+                </form>
+            </CardText>
+            <CardActions>
+                <FlatButton label="Discover" primary />
+            </CardActions>
+        </Card>
     </MuiThemeProvider>
 )
