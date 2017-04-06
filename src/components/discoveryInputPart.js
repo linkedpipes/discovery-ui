@@ -1,8 +1,22 @@
 import React from 'react';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 import FontIcon from 'material-ui/FontIcon';
-import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn}
-    from 'material-ui/Table';
+import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
+import { map, values, compose } from 'ramda';
+import { Checkbox } from 'material-ui';
+
+const renderComponents = (toggleItem) => compose(
+    map( (row, index) => (
+        <TableRow key={index}>
+            <TableRowColumn>
+                <Checkbox onCheck={() => toggleItem(row.uri, row.active)}/>
+            </TableRowColumn>
+            <TableRowColumn>{row.uri}</TableRowColumn>
+            <TableRowColumn>{row.label}</TableRowColumn>
+        </TableRow>
+    )),
+    values,
+);
 
 const DiscoveryInputPart = (props) => (
     <div>
@@ -13,31 +27,17 @@ const DiscoveryInputPart = (props) => (
                 <ToolbarSeparator />
             </ToolbarGroup>
         </Toolbar>
-        <Table
-            selectable
-            multiSelectable
-        >
-            <TableHeader
-                displaySelectAll
-                adjustForCheckbox
-                enableSelectAll
-            >
+        <Table>
+            <TableHeader>
                 <TableRow>
+                    <TableHeaderColumn>
+                    </TableHeaderColumn>
                     <TableHeaderColumn tooltip="URI">URI</TableHeaderColumn>
                     <TableHeaderColumn tooltip="Label">Label</TableHeaderColumn>
                 </TableRow>
             </TableHeader>
-            <TableBody
-                displayRowCheckbox
-                deselectOnClickaway
-                showRowHover
-            >
-                {[{},{},{}].map( (row, index) => (
-                    <TableRow key={index} selected={row.selected}>
-                        <TableRowColumn>{row.uri}</TableRowColumn>
-                        <TableRowColumn>{row.label}</TableRowColumn>
-                    </TableRow>
-                ))}
+            <TableBody showRowHover>
+                {renderComponents(props.toggleItem)(props.components)}
             </TableBody>
         </Table>
     </div>

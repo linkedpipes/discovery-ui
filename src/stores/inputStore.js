@@ -1,17 +1,24 @@
-import { createStore } from 'redux'
+import {createStore, applyMiddleware} from "redux";
+import thunkMiddleware from "redux-thunk";
+import {assocPath} from 'ramda';
 
-function counter(state = 0, action) {
+
+const defaultState = {
+    components: {"a": {uri: "a", label: "a", type: "application"}}
+};
+
+export const reducer = (state = defaultState, action) => {
     switch (action.type) {
-        case 'INCREMENT':
-            return state + 1
-        case 'DECREMENT':
-            return state - 1
+        case 'TOGGLE_ITEM':
+            const { uri, active } = action;
+            return assocPath(['components', uri, 'active'], !active, state);
         default:
             return state
     }
-}
+};
 
-// Create a Redux store holding the state of your app.
-// Its API is { subscribe, dispatch, getState }.
-let inputStore = createStore(counter)
-export default inputStore;
+export const toggleItem = (uri, active) => ({ type: 'TOGGLE_ITEM', uri, active });
+
+export const initStore = (initialState = defaultState) => {
+    return createStore(reducer, initialState, applyMiddleware(thunkMiddleware))
+};
