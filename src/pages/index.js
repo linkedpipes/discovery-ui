@@ -3,7 +3,7 @@ import FlatButton from "material-ui/FlatButton";
 import {Card, CardActions, CardHeader, CardText} from "material-ui/Card";
 import DiscoveryInput from "../components/discoveryInput";
 import {Provider} from "react-redux";
-import { initStore, toggleItem } from '../stores/inputStore'
+import {initStore, toggleItem} from '../stores/inputStore'
 import withRedux from "next-redux-wrapper";
 
 const IndexPage = ({components, dispatch}) => (
@@ -18,7 +18,6 @@ const IndexPage = ({components, dispatch}) => (
             <CardText>
                 <form>
                     <DiscoveryInput components={components} toggleItem={(uri, active) => dispatch(toggleItem(uri, active))}/>
-                    {JSON.stringify(components)}
                 </form>
             </CardText>
             <CardActions>

@@ -28,15 +28,14 @@ const DiscoveryInputPart = (props) => (
             </ToolbarGroup>
         </Toolbar>
         <Table>
-            <TableHeader>
+            <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
                 <TableRow>
-                    <TableHeaderColumn>
-                    </TableHeaderColumn>
+                    <TableHeaderColumn></TableHeaderColumn>
                     <TableHeaderColumn tooltip="URI">URI</TableHeaderColumn>
                     <TableHeaderColumn tooltip="Label">Label</TableHeaderColumn>
                 </TableRow>
             </TableHeader>
-            <TableBody showRowHover>
+            <TableBody showRowHover displayRowCheckbox={false}>
                 {renderComponents(props.toggleItem)(props.components)}
             </TableBody>
         </Table>
