@@ -1,19 +1,23 @@
-import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
-import FlatButton from "material-ui/FlatButton";
-import {Card, CardActions, CardHeader, CardText} from "material-ui/Card";
-import DiscoveryInput from "../components/discoveryInput";
-import {Provider} from "react-redux";
+
+import DiscoveryInput from '../components/discoveryInput'
+import {Provider} from 'react-redux'
 import {initStore, toggleItem} from '../stores/inputStore'
-import withRedux from "next-redux-wrapper";
+import withRedux from 'next-redux-wrapper'
+import Link from 'next/link'
+import Layout from '../components/layout'
+import Card from 'react-md/lib/Cards/Card';
+import CardTitle from 'react-md/lib/Cards/CardTitle';
+import CardActions from 'react-md/lib/Cards/CardActions';
+import CardText from 'react-md/lib/Cards/CardText';
+import Button from 'react-md/lib/Buttons/Button';
+
 
 const IndexPage = ({components, dispatch}) => (
-    <MuiThemeProvider>
+    <Layout>
         <Card>
-            <CardHeader
+            <CardTitle
                 title="Start discovery"
                 subtitle="Select components you want to take part in the discovery process"
-                actAsExpander
-                showExpandableButton
             />
             <CardText>
                 <form>
@@ -21,10 +25,12 @@ const IndexPage = ({components, dispatch}) => (
                 </form>
             </CardText>
             <CardActions>
-                <FlatButton label="Discover" primary onClick={() => dispatch()}/>
+                <Link href="/discovery">
+                    <Button flat label="Discover" primary />
+                </Link>
             </CardActions>
         </Card>
-    </MuiThemeProvider>
+    </Layout>
 )
 
 export default withRedux(initStore, (state) => ({ components: state.components, selected: () => {} }))(IndexPage)

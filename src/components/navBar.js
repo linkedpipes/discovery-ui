@@ -1,11 +1,13 @@
-import React from 'react';
-import AppBar from 'material-ui/AppBar';
+import React from 'react'
+import Toolbar from 'react-md/lib/Toolbars'
 
-const NavBar = () => (
-    <AppBar
+const NavBar = ({children}) => (
+    <Toolbar
+        colored
         title="Linked Pipes Discovery UI"
-        iconClassNameRight="muidocs-icon-navigation-expand-more"
-    />
+    >
+        {children}
+    </Toolbar>
 );
 
 export default NavBar;

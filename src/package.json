@@ -4,8 +4,11 @@
     "next": "^2.0.1",
     "next-redux-wrapper": "^1.0.0",
     "ramda": "^0.23.0",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
+    "react": "^15.5.3",
+    "react-addons-css-transition-group": "^15.5.1",
+    "react-addons-transition-group": "^15.5.1",
+    "react-dom": "^15.5.3",
+    "react-md": "^1.0.11",
     "react-toolbox": "^2.0.0-beta.7",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0"
@@ -16,6 +19,8 @@
     "start": "next start"
   },
   "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-plugin-react": "^6.10.3",
     "install": "^0.8.8",
     "npm": "^4.4.4",
     "react-redux": "^5.0.3",

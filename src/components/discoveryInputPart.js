@@ -1,44 +1,38 @@
 import React from 'react';
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
-import FontIcon from 'material-ui/FontIcon';
-import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
+import Toolbar from 'react-md/lib/Toolbars'
+import FontIcon from 'react-md/lib/FontIcons';
+import DataTable from 'react-md/lib/DataTables/DataTable';
+import TableHeader from 'react-md/lib/DataTables/TableHeader';
+import TableBody from 'react-md/lib/DataTables/TableBody';
+import TableRow from 'react-md/lib/DataTables/TableRow';
+import TableColumn from 'react-md/lib/DataTables/TableColumn';
+import Checkbox from 'react-md/lib/SelectionControls/Checkbox';
+
 import { map, values, compose } from 'ramda';
-import { Checkbox } from 'material-ui';
 
 const renderComponents = (toggleItem) => compose(
     map( (row, index) => (
         <TableRow key={index}>
-            <TableRowColumn>
-                <Checkbox onCheck={() => toggleItem(row.uri, row.active)}/>
-            </TableRowColumn>
-            <TableRowColumn>{row.uri}</TableRowColumn>
-            <TableRowColumn>{row.label}</TableRowColumn>
+            <TableColumn>
+            </TableColumn>
+            <TableColumn>{row.uri}</TableColumn>
         </TableRow>
     )),
-    values,
 );
 
 const DiscoveryInputPart = (props) => (
     <div>
-        <Toolbar>
-            <ToolbarGroup>
-                <ToolbarTitle text={props.label} />
-                <FontIcon className="muidocs-icon-custom-sort" />
-                <ToolbarSeparator />
-            </ToolbarGroup>
-        </Toolbar>
-        <Table>
+        <DataTable>
             <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
                 <TableRow>
-                    <TableHeaderColumn></TableHeaderColumn>
-                    <TableHeaderColumn tooltip="URI">URI</TableHeaderColumn>
-                    <TableHeaderColumn tooltip="Label">Label</TableHeaderColumn>
+                    <TableColumn/>
+                    <TableColumn tooltip="Uri">Uri</TableColumn>
                 </TableRow>
             </TableHeader>
             <TableBody showRowHover displayRowCheckbox={false}>
                 {renderComponents(props.toggleItem)(props.components)}
             </TableBody>
-        </Table>
+        </DataTable>
     </div>
 );
 
