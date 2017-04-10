@@ -15,8 +15,10 @@ export const reducer = (state = defaultState, action) => {
     switch (action.type) {
         case 'TOGGLE_ITEM':
             const { uri, isActive, componentType, count } = action;
+            // TODO: if uri is null, toggle all of componentType
             return assocPath(['components', uri, 'active'], isActive, state);
         case 'START_DISCOVERY':
+            // TODO: post component URIs, get discoveryId
             return ;
         default:
             return state
