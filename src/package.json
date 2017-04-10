@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "isomorphic-fetch": "^2.2.1",
     "material-ui": "^0.17.1",
     "next": "^2.0.1",
     "next-redux-wrapper": "^1.0.0",

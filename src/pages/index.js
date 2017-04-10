@@ -1,14 +1,12 @@
-
 import DiscoveryInput from '../components/discoveryInput'
-import {Provider} from 'react-redux'
-import {initStore, toggleItem} from '../stores/inputStore'
+import {initStore, toggleDiscoveryInputItem} from '../stores/discoveryStore'
 import withRedux from 'next-redux-wrapper'
 import Link from 'next/link'
 import Layout from '../components/layout'
 import Card from 'react-md/lib/Cards/Card';
 import CardTitle from 'react-md/lib/Cards/CardTitle';
-import CardActions from 'react-md/lib/Cards/CardActions';
 import CardText from 'react-md/lib/Cards/CardText';
+import CardActions from 'react-md/lib/Cards/CardActions';
 import Button from 'react-md/lib/Buttons/Button';
 
 
@@ -21,7 +19,7 @@ const IndexPage = ({components, dispatch}) => (
             />
             <CardText>
                 <form>
-                    <DiscoveryInput components={components} toggleItem={(uri, active) => dispatch(toggleItem(uri, active))}/>
+                    <DiscoveryInput components={components} toggleDiscoveryInputItem={(uri, active, count) => dispatch(toggleDiscoveryInputItem(uri, active, count))}/>
                 </form>
             </CardText>
             <CardActions>

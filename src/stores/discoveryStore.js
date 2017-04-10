@@ -2,7 +2,6 @@ import {createStore, applyMiddleware} from "redux";
 import thunkMiddleware from "redux-thunk";
 import {assocPath} from 'ramda';
 
-
 const defaultState = {
     components: {
         "http://linked.opendata.cz/ldcp/resource/ldvm/dataset/dblp/template": {uri: "http://linked.opendata.cz/ldcp/resource/ldvm/dataset/dblp/template", label: "DBLP", type: "datasource"},
@@ -15,14 +14,18 @@ const defaultState = {
 export const reducer = (state = defaultState, action) => {
     switch (action.type) {
         case 'TOGGLE_ITEM':
-            const { uri, active } = action;
-            return assocPath(['components', uri, 'active'], !active, state);
+            const { uri, isActive, componentType, count } = action;
+            return assocPath(['components', uri, 'active'], isActive, state);
+        case 'START_DISCOVERY':
+            return ;
         default:
             return state
     }
 };
 
-export const toggleItem = (uri, active) => ({ type: 'TOGGLE_ITEM', uri, active });
+export const toggleDiscoveryInputItem = (uri, isActive, componentType, count) => ({ type: 'TOGGLE_ITEM', uri, isActive, componentType, count});
+
+export const startDiscovery = () => ({ type: 'START_DISCOVERY'});
 
 export const initStore = (initialState = defaultState) => {
     return createStore(reducer, initialState, applyMiddleware(thunkMiddleware))

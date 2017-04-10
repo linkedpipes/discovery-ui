@@ -1,23 +1,23 @@
-import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card'
-import {Provider} from 'react-redux'
-import {initStore} from '../stores/inputStore'
+import {initStore} from '../stores/discoveryStore'
 import withRedux from 'next-redux-wrapper'
 import Layout from '../components/layout'
+import Card from 'react-md/lib/Cards/Card';
+import CardTitle from 'react-md/lib/Cards/CardTitle';
+import CardText from 'react-md/lib/Cards/CardText';
+import CircularProgress from 'react-md/lib/Progress/CircularProgress';
 
 const DiscoveryPage = ({components, dispatch}) => (
     <Layout>
         <Card>
-            <CardHeader
-                title="Discovery progress"
-                subtitle="The discovery is running"
+            <CardTitle
+                title="Discovery in progress"
+                subtitle="Discovery is running. Results will be offered on demand."
             />
             <CardText>
-                {JSON.stringify(components)}
+                <CircularProgress key="progress" id={'discovery_progress'} />
             </CardText>
-            <CardActions>
-            </CardActions>
         </Card>
     </Layout>
 )
 
-export default withRedux(initStore, (state) => ({ components: state.components, selected: () => {} }))(DiscoveryPage)
+export default withRedux(initStore, (state) => ({ components: state.components }))(DiscoveryPage)

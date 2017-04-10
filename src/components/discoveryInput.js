@@ -9,9 +9,9 @@ const typeFilter = (componentType) => compose(
 
 const DiscoveryInput = ({components, ...props}) => (
     <div>
-        <DiscoveryInputPart label="Data sources" components={typeFilter('datasource')(components)} {...props}/>
-        <DiscoveryInputPart label="Transformers" components={typeFilter('transformer')(components)} {...props}/>
-        <DiscoveryInputPart label="Applications" components={typeFilter('application')(components)} {...props}/>
+        <DiscoveryInputPart label="Data sources" componentType="datasource" components={typeFilter('datasource')(components)} {...props}/>
+        <DiscoveryInputPart label="Transformers" componentType="transformer" components={typeFilter('transformer')(components)} {...props}/>
+        <DiscoveryInputPart label="Applications" componentType="application" components={typeFilter('application')(components)} {...props}/>
     </div>
 );
 
