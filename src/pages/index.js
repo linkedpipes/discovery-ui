@@ -19,7 +19,6 @@ const IndexPage = ({ components, dispatch }) => (
             />
             <CardText>
                 <form>
-                    {JSON.stringify(components)}
                     <DiscoveryInput components={components} toggleDiscoveryInputItem={(uri, active, count) => dispatch(toggleDiscoveryInputItem(uri, active, count))} />
                 </form>
             </CardText>

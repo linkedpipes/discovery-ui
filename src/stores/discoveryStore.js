@@ -3,6 +3,9 @@ import thunkMiddleware from 'redux-thunk';
 import { assocPath, values, compose, reduce, filter } from 'ramda';
 
 const defaultState = {
+    configuration: {
+        apiEndpoint: 'http://localhost:9000'
+    },
     components: {
         'http://linked.opendata.cz/ldcp/resource/ldvm/dataset/dblp/template': {
             uri: 'http://linked.opendata.cz/ldcp/resource/ldvm/dataset/dblp/template',
@@ -43,10 +46,8 @@ export const reducer = (state = defaultState, action) => {
     switch (action.type) {
     case 'TOGGLE_ITEM':
         return onToggleItem(state, action)
-    case 'DISCOVERY_START':
-        console.log('yup')
-        // TODO: post component URIs, get discoveryId
-        return null
+    case 'DISCOVERY_STARTED':
+
     default:
         return state
     }
