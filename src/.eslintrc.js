@@ -3,7 +3,7 @@ module.exports = {
         "browser": true,
         "es6": true
     },
-    "extends": "eslint:recommended",
+    "extends": "airbnb",
     "parserOptions": {
         "ecmaFeatures": {
             "experimentalObjectRestSpread": true,
@@ -19,6 +19,14 @@ module.exports = {
             "error",
             4
         ],
+        "react/jsx-indent": [
+            "error",
+            4
+        ],
+        "react/jsx-indent-props": [
+            "error",
+            4
+        ],
         "linebreak-style": [
             "error",
             "unix"
@@ -30,6 +38,11 @@ module.exports = {
         "semi": [
             "error",
             "never"
-        ]
+        ],
+        "max-len": [
+            "error",
+            180
+        ],
+        "react/jsx-filename-extension": 0
     }
 };

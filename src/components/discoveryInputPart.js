@@ -19,7 +19,15 @@ const renderRows = compose(
 const DiscoveryInputPart = (props) => (
     <div>
         <Toolbar themed title={props.label}/>
-        <DataTable baseId='discoveryInput' onRowToggle={(index, isActive, componentType, count) => props.toggleDiscoveryInputItem(props.components[index] ? props.components[index].uri : null, isActive, props.componentType, count)} >
+        <DataTable
+            baseId='discoveryInput'
+            onRowToggle={(index, isActive, count) => props.toggleDiscoveryInputItem(
+                props.components[index] ? props.components[index].uri : null,
+                isActive,
+                props.componentType,
+                count
+            )}
+        >
             <TableHeader>
                 <TableRow>
                     <TableColumn>Uri</TableColumn>
