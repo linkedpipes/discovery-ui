@@ -5,11 +5,8 @@ import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import Layout from '../components/layout'
-import { initStore } from '../stores/discoveryStore'
+import { initStore, onDiscoveryStartSuccess } from '../stores/discoveryStore'
 import { assocPath, values, compose, map, filter } from 'ramda';
-
-const onDiscoveryStartSuccess = (x) => console.log(x)
-const onDiscoveryStartFail = (x) => console.log(x)
 
 class DiscoveryPage extends React.Component {
 
@@ -22,11 +19,11 @@ class DiscoveryPage extends React.Component {
 
         fetch(this.props.configuration.apiEndpoint + '/discovery/start', {
             method: 'POST',
-            mode: 'no-cors',
-            body: activeComponentUris
+            headers: new Headers({'content-type': 'application/json'}),
+            body: JSON.stringify(activeComponentUris)
         }).then(
             success => this.props.dispatch(onDiscoveryStartSuccess(success)),
-            error => this.props.dispatch(onDiscoveryStartFail(error)),
+            error => console.log(error),
         )
     }
 

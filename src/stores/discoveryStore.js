@@ -47,11 +47,13 @@ export const reducer = (state = defaultState, action) => {
     case 'TOGGLE_ITEM':
         return onToggleItem(state, action)
     case 'DISCOVERY_STARTED':
-
+        console.log("started")
     default:
         return state
     }
 }
+
+export const onDiscoveryStartSuccess = (success) => ({ type: 'DISCOVERY_STARTED', success })
 
 export const toggleDiscoveryInputItem = (uri, isActive, componentType, count) => ({
     type: 'TOGGLE_ITEM',
