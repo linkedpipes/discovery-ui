@@ -9,23 +9,23 @@ import TableColumn from 'react-md/lib/DataTables/TableColumn';
 import { map, compose } from 'ramda';
 
 const renderRows = compose(
-    map( (row) => (
+    map(row => (
         <TableRow key={row.uri}>
             <TableColumn>{row.uri}</TableColumn>
         </TableRow>
-    ))
-);
+    )),
+)
 
 const DiscoveryInputPart = (props) => (
     <div>
-        <Toolbar themed title={props.label}/>
+        <Toolbar themed title={props.label} />
         <DataTable
             baseId='discoveryInput'
             onRowToggle={(index, isActive, count) => props.toggleDiscoveryInputItem(
                 props.components[index] ? props.components[index].uri : null,
                 isActive,
                 props.componentType,
-                count
+                count,
             )}
         >
             <TableHeader>
@@ -38,6 +38,6 @@ const DiscoveryInputPart = (props) => (
             </TableBody>
         </DataTable>
     </div>
-);
+)
 
-export default DiscoveryInputPart;
+export default DiscoveryInputPart

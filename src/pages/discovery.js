@@ -4,27 +4,72 @@ import Card from 'react-md/lib/Cards/Card'
 import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
+import { values, compose, map, filter } from 'ramda'
 import Layout from '../components/layout'
-import { initStore, onDiscoveryStartSuccess } from '../stores/discoveryStore'
-import { assocPath, values, compose, map, filter } from 'ramda';
+import PipelineGroups from '../components/pipelineGroups'
+import { initStore, onDiscoveryStartSuccess, onDiscoveryStatusUpdated, onDiscoveryFinished, onPipelineGroupsUpdated } from '../stores/discoveryStore'
 
 class DiscoveryPage extends React.Component {
 
-    componentDidMount() {
+    componentDidMount () {
         const activeComponentUris = compose(
             map(c => c.uri),
             filter(c => c.isActive),
             values,
         )(this.props.components)
 
-        fetch(this.props.configuration.apiEndpoint + '/discovery/start', {
+        fetch(`${this.props.configuration.apiEndpoint}/discovery/start`, {
             method: 'POST',
-            headers: new Headers({'content-type': 'application/json'}),
-            body: JSON.stringify(activeComponentUris)
+            headers: new Headers({ 'content-type': 'application/json' }),
+            body: JSON.stringify(activeComponentUris),
         }).then(
-            success => this.props.dispatch(onDiscoveryStartSuccess(success)),
+            (success) => {
+                success.json().then(
+                    json => this.props.dispatch(onDiscoveryStartSuccess(json)),
+                    error => console.log(error),
+                ).then(
+                    _ => checkDiscoveryStatus(),
+                )
+            },
             error => console.log(error),
         )
+
+        const checkDiscoveryStatus = () => {
+            fetch(`${this.props.configuration.apiEndpoint}/discovery/${this.props.discovery.id}`, {
+                method: 'GET',
+            }).then(
+                (success) => {
+                    success.json().then(
+                        newStatus => this.props.dispatch(onDiscoveryStatusUpdated(newStatus)),
+                        error => console.log(error),
+                    )
+                },
+                error => console.log(error),
+            ).then(
+                _ => {
+                    if (!this.props.discovery.status.isFinished) {
+                        checkDiscoveryStatus()
+                    } else {
+                        this.props.dispatch(onDiscoveryFinished())
+                    }
+                    updatePipelineGroups()
+                },
+            )
+        }
+
+        const updatePipelineGroups = () => {
+            fetch(`${this.props.configuration.apiEndpoint}/discovery/${this.props.discovery.id}/pipeline-groups`, {
+                method: 'GET',
+            }).then(
+                (success) => {
+                    success.json().then(
+                        ({ pipelineGroups }) => this.props.dispatch(onPipelineGroupsUpdated(pipelineGroups)),
+                        error => console.log(error),
+                    )
+                },
+                error => console.log(error),
+            )
+        }
     }
 
     render() {
@@ -32,13 +77,26 @@ class DiscoveryPage extends React.Component {
             <Layout>
                 <Card>
                     <CardTitle
-                        title="Discovery in progress"
-                        subtitle="Discovery is running. Results will be offered on demand."
+                        title="Discovery details"
+                        subtitle="Discovery is running. Results will be displayed on demand."
                     />
-                    <CardText>
-                        <CircularProgress key="progress" id={'discovery_progress'}/>
+                    <CardText style={{textAlign: 'center'}}>
+                        <div>
+                            {
+                                this.props.discovery.status.isFinished
+                                ? <span>Done!</span>
+                                : <div>
+                                    Waiting for the discovery to complete.
+                                    <CircularProgress key="progress" id={'discovery_progress'}/>
+                                  </div>
+                            }
+                        </div>
+                        <div>
+                            Discovered {this.props.discovery.status.pipelineCount} pipelines in total.
+                        </div>
                     </CardText>
                 </Card>
+                <PipelineGroups pipelineGroups={this.props.discovery.pipelineGroups} />
             </Layout>
         )
     }
@@ -48,4 +106,4 @@ DiscoveryPage.propTypes = {
     dispatch: React.PropTypes.func.isRequired,
 }
 
-export default withRedux(initStore, state => ({ components: state.components, configuration: state.configuration }))(DiscoveryPage)
+export default withRedux(initStore, state => ({ components: state.components, configuration: state.configuration, discovery: state.discovery }))(DiscoveryPage)
