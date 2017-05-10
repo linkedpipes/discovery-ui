@@ -7,28 +7,7 @@ const defaultState = {
     configuration: {
         apiEndpoint: 'http://localhost:9000',
     },
-    components: {
-        'http://linked.opendata.cz/ldcp/resource/ldvm/dataset/dblp/template': {
-            uri: 'http://linked.opendata.cz/ldcp/resource/ldvm/dataset/dblp/template',
-            label: 'DBLP',
-            type: 'datasource',
-        },
-        'http://linked.opendata.cz/ldcp/resource/ldvm/transformer/foaf-maker-to-foaf-made/template': {
-            uri: 'http://linked.opendata.cz/ldcp/resource/ldvm/transformer/foaf-maker-to-foaf-made/template',
-            label: 'foaf:maker to foaf:made',
-            type: 'transformer',
-        },
-        'http://linked.opendata.cz/ldcp/resource/ldvm/transformer/dct-issued-to-time-instant/template': {
-            uri: 'http://linked.opendata.cz/ldcp/resource/ldvm/transformer/dct-issued-to-time-instant/template',
-            label: 'dct:issued to time:instant',
-            type: 'transformer',
-        },
-        'http://linked.opendata.cz/ldcp/resource/ldvm/application/personal-profiles/template': {
-            uri: 'http://linked.opendata.cz/ldcp/resource/ldvm/application/personal-profiles/template',
-            label: 'Personal profiles',
-            type: 'application',
-        },
-    },
+    components: {},
     discovery: {
         id: null,
         status: {
@@ -41,28 +20,31 @@ const defaultState = {
 
 export const reducer = (state = defaultState, action) => {
     switch (action.type) {
-    case 'TOGGLE_ITEM':
-        const { uri, isActive, componentType } = action
-        if (uri !== null) {
-            return assocPath(['components', uri, 'isActive'], isActive, state);
-        }
+        case 'COMPONENTS_FETCHED':
+            return assocPath(['components'], action.components, state)
+        case 'DISCOVERY_STARTED':
+            return assocPath(['discovery', 'id'], action.id, state)
+        case 'DISCOVERY_STATUS_UPDATED':
+            return assocPath(['discovery', 'status'], action.status, state)
+        case 'PIPELINE_GROUPS_UPDATED':
+            return assocPath(['discovery', 'pipelineGroups'], action.pipelineGroups, state)
+        case 'TOGGLE_ITEM':
+            const { uri, isActive, componentType } = action
+            if (uri !== null) {
+                return assocPath(['components', uri, 'isActive'], isActive, state);
+            }
 
-        return compose(
-            reduce((acc, item) => assocPath(['components', item.uri, 'isActive'], isActive, acc), state),
-            filter(c => c.type === componentType),
-            values,
-        )(state.components)
-    case 'DISCOVERY_STARTED':
-        return assocPath(['discovery', 'id'], action.id, state)
-    case 'DISCOVERY_STATUS_UPDATED':
-        return assocPath(['discovery', 'status'], action.status, state)
-    case 'PIPELINE_GROUPS_UPDATED':
-        console.log(action.pipelineGroups);
-        return assocPath(['discovery', 'pipelineGroups'], action.pipelineGroups, state)
+            return compose(
+                reduce((acc, item) => assocPath(['components', item.uri, 'isActive'], isActive, acc), state),
+                filter(c => c.type === componentType),
+                values,
+            )(state.components)
     default:
         return state
     }
 }
+
+export const onComponentsFetched = components => ({ type: 'COMPONENTS_FETCHED', components })
 
 export const onDiscoveryStartSuccess = ({ id }) => ({ type: 'DISCOVERY_STARTED', id })
 

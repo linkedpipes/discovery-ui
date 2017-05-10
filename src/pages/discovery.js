@@ -11,7 +11,7 @@ import { initStore, onDiscoveryStartSuccess, onDiscoveryStatusUpdated, onDiscove
 
 class DiscoveryPage extends React.Component {
 
-    componentDidMount () {
+    componentDidMount() {
         const activeComponentUris = compose(
             map(c => c.uri),
             filter(c => c.isActive),

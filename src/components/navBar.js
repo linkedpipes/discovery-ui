@@ -10,4 +10,4 @@ const NavBar = ({ children }) => (
     </Toolbar>
 );
 
-export default NavBar;
+export default NavBar
