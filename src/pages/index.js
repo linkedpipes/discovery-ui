@@ -57,4 +57,4 @@ IndexPage.propTypes = {
     dispatch: React.PropTypes.func.isRequired,
 }
 
-export default withRedux(initStore, state => ({ components: state.components, configuration: state.configuration }))(IndexPage)
+export default withRedux(initStore, state => ({ components: state.components }))(IndexPage)

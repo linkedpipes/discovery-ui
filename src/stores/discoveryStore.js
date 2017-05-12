@@ -4,9 +4,6 @@ import { assocPath, values, compose, reduce, filter } from 'ramda'
 import asyncActionMiddleware from '../lib/asyncActionMiddleware'
 
 const defaultState = {
-    configuration: {
-        apiEndpoint: 'http://localhost:9000',
-    },
     components: {},
     discovery: {
         id: null,

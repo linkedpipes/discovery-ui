@@ -18,7 +18,7 @@ class DiscoveryPage extends React.Component {
             values,
         )(this.props.components)
 
-        fetch(`${this.props.configuration.apiEndpoint}/discovery/start`, {
+        fetch(`${BACKEND_URL}/discovery/start`, {
             method: 'POST',
             headers: new Headers({ 'content-type': 'application/json' }),
             body: JSON.stringify(activeComponentUris),
@@ -35,7 +35,7 @@ class DiscoveryPage extends React.Component {
         )
 
         const checkDiscoveryStatus = () => {
-            fetch(`${this.props.configuration.apiEndpoint}/discovery/${this.props.discovery.id}`, {
+            fetch(`${BACKEND_URL}/discovery/${this.props.discovery.id}`, {
                 method: 'GET',
             }).then(
                 (success) => {
@@ -58,7 +58,7 @@ class DiscoveryPage extends React.Component {
         }
 
         const updatePipelineGroups = () => {
-            fetch(`${this.props.configuration.apiEndpoint}/discovery/${this.props.discovery.id}/pipeline-groups`, {
+            fetch(`${BACKEND_URL}/discovery/${this.props.discovery.id}/pipeline-groups`, {
                 method: 'GET',
             }).then(
                 (success) => {
@@ -106,4 +106,4 @@ DiscoveryPage.propTypes = {
     dispatch: React.PropTypes.func.isRequired,
 }
 
-export default withRedux(initStore, state => ({ components: state.components, configuration: state.configuration, discovery: state.discovery }))(DiscoveryPage)
+export default withRedux(initStore, state => ({ components: state.components, discovery: state.discovery }))(DiscoveryPage)
