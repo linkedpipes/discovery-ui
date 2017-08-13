@@ -1,56 +1,68 @@
 import React from 'react'
-import { addIndex, map, compose, values } from 'ramda'
+import { addIndex, map, compose } from 'ramda'
 import Card from 'react-md/lib/Cards/Card'
 import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
+import Button from 'react-md/lib/Buttons/Button'
 
 
-const renderDataSampleGroups = compose(
+const exportPipeline = (discoveryId, pipelineId) => {
+    fetch(`${BACKEND_URL}/discovery/${discoveryId}/execute/${pipelineId}`).then(
+        success => {},
+        error => {}
+    )
+}
+
+const renderDataSampleGroups = (dataSampleGroups, discoveryId) => compose(
     map(dataSampleGroup => (
-        <div key={dataSampleGroup.pipelineId}>
-            <span>MI: {dataSampleGroup.minimalIteration}</span>
-            <div>{dataSampleGroup.pipeline.name}</div>
-        </div>
+        <li key={dataSampleGroup.pipeline.id}>
+            <span>Minimal iteration: {dataSampleGroup.minimalIteration}</span>
+            <div>
+                {dataSampleGroup.pipeline.descriptor}
+            </div>
+            <Button flat label='Export' onClick={() => exportPipeline(discoveryId, dataSampleGroup.pipeline.id)} />
+        </li>
     )),
-)
+)(dataSampleGroups)
 
-const renderExtractorGroups = compose(
+const renderExtractorGroups = (extractorGroups, discoveryId) => compose(
     addIndex(map)((extractorGroup, idx) => (
-        <div key={idx}>
-            <strong>{map(extractor => (<span key={extractor.uri}>{extractor.name}</span>), extractorGroup.extractorInstances)}</strong>
-            <div>{renderDataSampleGroups(extractorGroup.dataSampleGroups)}</div>
-        </div>
+        <li key={idx}>
+            <strong>{map(extractor => (<span key={extractor.uri}>Extractor: {extractor.label} ({extractor.uri})</span>), extractorGroup.extractorInstances)}</strong>
+            <ul>{renderDataSampleGroups(extractorGroup.dataSampleGroups, discoveryId)}</ul>
+        </li>
     )),
-)
+)(extractorGroups)
 
-const renderDataSourceGroups = compose(
+const renderDataSourceGroups = (dataSourceGroups, discoveryId) => compose(
     addIndex(map)((dataSourceGroup, idx) => (
-        <div key={idx}>
-            <h3>{map(dataSource => (<span key={dataSource.uri}>{dataSource.label}</span>), dataSourceGroup.dataSourceInstances)}</h3>
-            <div>{renderExtractorGroups(dataSourceGroup.extractorGroups)}</div>
-        </div>
+        <li key={idx}>
+            <h4>{map(dataSource => (<span key={dataSource.uri}>Data source: {dataSource.label} ({dataSource.uri})</span>), dataSourceGroup.dataSourceInstances)}</h4>
+            <ul>{renderExtractorGroups(dataSourceGroup.extractorGroups, discoveryId)}</ul>
+        </li>
     )),
-)
+)(dataSourceGroups)
 
-const renderApplicationGroups = compose(
+const renderApplicationGroups = (applicationGroups, discoveryId) => compose(
     map(applicationGroup => (
         <Card key={applicationGroup.applicationInstance.uri}>
             <CardTitle
-                title={applicationGroup.applicationInstance.name}
+                title={applicationGroup.applicationInstance.label}
+                subtitle={applicationGroup.applicationInstance.uri}
             />
             <CardText>
                 <div>
-                    <div>{renderDataSourceGroups(applicationGroup.dataSourceGroups)}</div>
+                    <ul>{renderDataSourceGroups(applicationGroup.dataSourceGroups, discoveryId)}</ul>
                 </div>
             </CardText>
         </Card>
     )),
-)
+)(applicationGroups)
 
-const PipelineGroups = ({ pipelineGroups }) => (
+const PipelineGroups = ({ pipelineGroups, discoveryId }) => (
     <div>
         <br />
-        {renderApplicationGroups(pipelineGroups.applicationGroups)}
+        {renderApplicationGroups(pipelineGroups.applicationGroups, discoveryId)}
     </div>
 )
 

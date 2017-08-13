@@ -6,21 +6,23 @@ import TableBody from 'react-md/lib/DataTables/TableBody';
 import TableRow from 'react-md/lib/DataTables/TableRow';
 import TableColumn from 'react-md/lib/DataTables/TableColumn';
 
-import { map, compose } from 'ramda';
+import { map, compose, values } from 'ramda';
 
 const renderRows = compose(
     map(row => (
         <TableRow key={row.uri}>
+            <TableColumn>{row.label}</TableColumn>
             <TableColumn>{row.uri}</TableColumn>
         </TableRow>
     )),
+    values
 )
 
 const DiscoveryInputPart = (props) => (
     <div>
         <Toolbar themed title={props.label} />
         <DataTable
-            baseId='discoveryInput'
+            baseId={props.componentType}
             onRowToggle={(index, isActive, count) => props.toggleDiscoveryInputItem(
                 props.components[index] ? props.components[index].uri : null,
                 isActive,
@@ -30,6 +32,7 @@ const DiscoveryInputPart = (props) => (
         >
             <TableHeader>
                 <TableRow>
+                    <TableColumn>Label</TableColumn>
                     <TableColumn>Uri</TableColumn>
                 </TableRow>
             </TableHeader>

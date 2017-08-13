@@ -1,23 +1,24 @@
 {
   "dependencies": {
     "isomorphic-fetch": "^2.2.1",
-    "next": "^2.0.1",
+    "next": "^3.0.3",
     "next-redux-wrapper": "^1.0.0",
-    "ramda": "^0.23.0",
-    "react": "^15.5.3",
+    "ramda": "^0.24.1",
+    "react": "^15.6.1",
     "react-addons-css-transition-group": "^15.5.1",
     "react-addons-transition-group": "^15.5.1",
-    "react-dom": "^15.5.3",
-    "react-md": "^1.0.13",
+    "react-dom": "^15.6.1",
+    "react-md": "^1.0.18",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0"
   },
   "scripts": {
     "dev": "next",
-    "build": "next build",
+    "build": "rimraf node_modules/.cache/babel-loader && next build",
     "start": "next start"
   },
   "devDependencies": {
+    "babel-plugin-transform-define": "^1.2.0",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",
@@ -27,6 +28,6 @@
     "npm": "^4.4.4",
     "react-redux": "^5.0.3",
     "redux-devtools": "^3.3.2",
-    "babel-plugin-transform-define": "^1.2.0"
+    "rimraf": "^2.6.1"
   }
 }

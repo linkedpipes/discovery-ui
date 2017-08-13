@@ -4,7 +4,7 @@ import Card from 'react-md/lib/Cards/Card'
 import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
-import { values, compose, map, filter } from 'ramda'
+import { values, compose, map, filter, mergeAll } from 'ramda'
 import Layout from '../components/layout'
 import PipelineGroups from '../components/pipelineGroups'
 import { initStore, onDiscoveryStartSuccess, onDiscoveryStatusUpdated, onDiscoveryFinished, onPipelineGroupsUpdated } from '../stores/discoveryStore'
@@ -15,6 +15,8 @@ class DiscoveryPage extends React.Component {
         const activeComponentUris = compose(
             map(c => c.uri),
             filter(c => c.isActive),
+            values,
+            mergeAll,
             values,
         )(this.props.components)
 
@@ -87,16 +89,16 @@ class DiscoveryPage extends React.Component {
                                 ? <span>Done!</span>
                                 : <div>
                                     Waiting for the discovery to complete.
-                                    <CircularProgress key="progress" id={'discovery_progress'}/>
+                                    <CircularProgress key="progress" id={'discovery_progress'} />
                                   </div>
                             }
                         </div>
                         <div>
-                            Discovered {this.props.discovery.status.pipelineCount} pipelines in total.
+                            Discovered {this.props.discovery.status.pipelineCount} pipeline(s) in total.
                         </div>
                     </CardText>
                 </Card>
-                <PipelineGroups pipelineGroups={this.props.discovery.pipelineGroups} />
+                <PipelineGroups pipelineGroups={this.props.discovery.pipelineGroups} discoveryId={this.props.discovery.id} />
             </Layout>
         )
     }
