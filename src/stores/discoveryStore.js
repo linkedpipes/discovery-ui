@@ -1,7 +1,6 @@
 import { createStore, applyMiddleware } from 'redux'
 import thunkMiddleware from 'redux-thunk'
-import { assocPath, values, compose, reduce, filter } from 'ramda'
-import asyncActionMiddleware from '../lib/asyncActionMiddleware'
+import { assocPath, values, compose, reduce } from 'ramda'
 
 const defaultState = {
     backendStatus: { isOnline: null },
@@ -43,24 +42,4 @@ export const reducer = (state = defaultState, action) => {
     }
 }
 
-export const onComponentsFetched = components => ({ type: 'COMPONENTS_FETCHED', components })
-
-export const onDiscoveryStartSuccess = ({ id }) => ({ type: 'DISCOVERY_STARTED', id })
-
-export const onDiscoveryFinished = () => ({ type: 'DISCOVERY_FINISHED' })
-
-export const onDiscoveryStatusUpdated = status => ({ type: 'DISCOVERY_STATUS_UPDATED', status })
-
-export const onPipelineGroupsUpdated = pipelineGroups => ({ type: 'PIPELINE_GROUPS_UPDATED', pipelineGroups })
-
-export const onBackendStatusFetched = isOnline => ({ type: 'BACKEND_STATUS_UPDATED', isOnline })
-
-export const toggleDiscoveryInputItem = (uri, isActive, componentType, count) => ({
-    type: 'TOGGLE_ITEM',
-    uri,
-    isActive,
-    componentType,
-    count,
-})
-
-export const initStore = (initialState = defaultState) => createStore(reducer, initialState, applyMiddleware(asyncActionMiddleware, thunkMiddleware))
+export const initStore = (initialState = defaultState) => createStore(reducer, initialState, applyMiddleware(thunkMiddleware))

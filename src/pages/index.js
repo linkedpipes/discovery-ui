@@ -1,45 +1,22 @@
 import React from 'react'
 import withRedux from 'next-redux-wrapper'
-import Link from 'next/link'
 import Card from 'react-md/lib/Cards/Card'
 import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
 import CardActions from 'react-md/lib/Cards/CardActions'
 import Button from 'react-md/lib/Buttons/Button'
 import DiscoveryInput from '../components/discoveryInput'
-import { initStore, toggleDiscoveryInputItem, onComponentsFetched, onBackendStatusFetched } from '../stores/discoveryStore'
+import { initStore } from '../stores/discoveryStore'
+import { fetchBackendStatus, toggleDiscoveryInputItem } from '../actions/actions'
 import Layout from '../components/layout'
+import Link from 'next/link'
 import BackendStatus from '../components/backendStatus'
 
 
 class IndexPage extends React.Component {
 
     componentDidMount() {
-
-        const checkBackendStatus = () => {
-            fetch(`${BACKEND_URL}/status`).then(
-                _ => {
-
-                    fetch(`${BACKEND_URL}/discovery/components`).then(
-                        (success) => {
-                            success.json().then(
-                                json => this.props.dispatch(onComponentsFetched(json)),
-                                error => console.log(error),
-                            )
-                        },
-                        error => console.log(error),
-                    )
-
-                    this.props.dispatch(onBackendStatusFetched(true))
-                },
-                _ => {
-                    this.props.dispatch(onBackendStatusFetched(false))
-                    window.setTimeout(checkBackendStatus, 1000)
-                }
-            )
-        }
-
-        checkBackendStatus()
+        this.props.handleServerStatusPrompt()
     }
 
     render() {
@@ -47,7 +24,7 @@ class IndexPage extends React.Component {
             <Layout>
                 {(this.props.backendStatus.isOnline === false) && <BackendStatus /> }
 
-                {Object.keys(this.props.components).length > 0 &&
+                {(Object.keys(this.props.components).length > 0) &&
                     <Card>
                         <CardTitle
                             title="Start discovery"
@@ -57,7 +34,7 @@ class IndexPage extends React.Component {
                             <form>
                                 <DiscoveryInput
                                     components={this.props.components}
-                                    toggleDiscoveryInputItem={(uri, active, count) => this.props.dispatch(toggleDiscoveryInputItem(uri, active, count))}
+                                    toggleDiscoveryInputItem={this.props.handleToggleDiscoveryInputItem}
                                 />
                             </form>
                         </CardText>
@@ -75,8 +52,21 @@ class IndexPage extends React.Component {
 
 IndexPage.propTypes = {
     backendStatus: React.PropTypes.object.isRequired,
-    components: React.PropTypes.object.isRequired,
-    dispatch: React.PropTypes.func.isRequired,
+    components: React.PropTypes.object.isRequired
 }
 
-export default withRedux(initStore, state => ({ components: state.components, backendStatus: state.backendStatus }))(IndexPage)
+const mapStateToProps = state => {
+    return {
+        components: state.components,
+        backendStatus: state.backendStatus
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        handleServerStatusPrompt: () => dispatch(fetchBackendStatus()),
+        handleToggleDiscoveryInputItem: (uri, active, count) => dispatch(toggleDiscoveryInputItem(uri, active, count))
+    }
+}
+
+export default withRedux(initStore, mapStateToProps, mapDispatchToProps)(IndexPage)
