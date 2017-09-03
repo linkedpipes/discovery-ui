@@ -1,30 +1,34 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import Button from 'react-md/lib/Buttons/Button'
-import fetch from 'isomorphic-fetch'
-import { onPipelineExported } from '../actions/actions'
+import CircularProgress from 'react-md/lib/Progress/CircularProgress'
+import { exportPipeline } from '../actions/actions'
 
 
-const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline }) => (
+const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelineData }) => (
     <li key={dataSampleGroup.pipeline.id}>
         <span>Minimal iteration: {dataSampleGroup.minimalIteration}</span>
         <div>
             {dataSampleGroup.pipeline.descriptor}
         </div>
-        <Button flat label='Export' onClick={() => exportPipeline(discoveryId, dataSampleGroup.pipeline.id)} />
+        {(!pipelineData[dataSampleGroup.pipeline.id] || (!pipelineData[dataSampleGroup.pipeline.id].isRunning && !pipelineData[dataSampleGroup.pipeline.id].isSuccess))  ?
+            <Button flat label='Export' onClick={() => exportPipeline(discoveryId, dataSampleGroup.pipeline.id)} /> :
+            null
+        }
+
+        {(pipelineData[dataSampleGroup.pipeline.id] && pipelineData[dataSampleGroup.pipeline.id].isRunning && !pipelineData[dataSampleGroup.pipeline.id].isSuccess) ?
+            <CircularProgress key={`progress_pipeline_${dataSampleGroup.pipeline.id}`} id={`progress_pipeline_${dataSampleGroup.pipeline.id}`} /> :
+            null
+        }
+
+        {(pipelineData[dataSampleGroup.pipeline.id] && !pipelineData[dataSampleGroup.pipeline.id].isRunning && pipelineData[dataSampleGroup.pipeline.id].isSuccess) ?
+            <span>Done</span> :
+            null
+        }
     </li>
 )
 
-const exportPipeline = (discoveryId, pipelineId) => {
-    return dispatch => {
-        return fetch(`${BACKEND_URL}/discovery/${discoveryId}/execute/${pipelineId}`).then(
-            success => dispatch(onPipelineExported(discoveryId, pipelineId)),
-            error => {}
-        )
-    }
-}
-
-const mapStateToProps = state => ({})
+const mapStateToProps = state => ({pipelineData: state.discovery.pipelineData})
 
 const mapDispatchToProps = dispatch => {
     return {

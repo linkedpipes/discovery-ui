@@ -11,6 +11,7 @@ const defaultState = {
             isFinished: false,
             pipelineCount: 0,
         },
+        pipelineData: {},
         pipelineGroups: { applicationGroups: [] },
     },
 }
@@ -37,6 +38,9 @@ export const reducer = (state = defaultState, action) => {
             )(state.components[componentType])
         case 'BACKEND_STATUS_UPDATED':
             return assocPath(['backendStatus', 'isOnline'], action.isOnline, state)
+        case 'PIPELINE_EXPORTED':
+            const data = { isRunning: true, ...action.payolad }
+            return assocPath(['discovery', 'pipelineData', action.payload.pipelineId], data, state)
     default:
         return state
     }

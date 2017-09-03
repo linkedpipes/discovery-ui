@@ -16,7 +16,7 @@ export const onBackendStatusFetched = isOnline => ({ type: 'BACKEND_STATUS_UPDAT
 
 export const onComponentsFetchError = () => ({ type: 'COMPONENTS_FETCH_ERROR' })
 
-export const onPipelineExported = (discoveryId, pipelineId) => ({ type: 'PIPELINE_EXPORTED', payload: { discoveryId, pipelineId } })
+export const onPipelineExported = exportData => ({ type: 'PIPELINE_EXPORTED', payload: exportData })
 
 export const toggleDiscoveryInputItem = (uri, isActive, componentType, count) => ({
     type: 'TOGGLE_ITEM',
@@ -30,7 +30,6 @@ export function fetchBackendStatus() {
     return dispatch => {
         return fetch(`${BACKEND_URL}/status`).then(
             _ => {
-
                 fetch(`${BACKEND_URL}/discovery/components`).then(
                     (success) => {
                         success.json().then(
@@ -109,6 +108,22 @@ const updatePipelineGroups = (id) => {
                 )
             },
             error => console.log(error),
+        )
+    }
+}
+
+export const exportPipeline = (discoveryId, pipelineId) => {
+    return dispatch => {
+        return fetch(`${BACKEND_URL}/discovery/${discoveryId}/execute/${pipelineId}`).then(
+            success => success.json().then(
+                json => {
+                        fetch(`${BACKEND_URL}/execution/${json.etlExecutionId}/status`)
+                        return dispatch(onPipelineExported(json))
+                    },
+                    error => {},
+                }
+            ),
+            error => {}
         )
     }
 }
