@@ -6,7 +6,7 @@ import { exportPipeline } from '../actions/actions'
 
 
 const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelineData }) => (
-    <li key={dataSampleGroup.pipeline.id}>
+    <li>
         <span>Minimal iteration: {dataSampleGroup.minimalIteration}</span>
         <div>
             {dataSampleGroup.pipeline.descriptor}

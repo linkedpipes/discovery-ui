@@ -7,7 +7,7 @@ import DataSampleGroup from './dataSampleGroup'
 
 const renderDataSampleGroups = (dataSampleGroups, discoveryId) => compose(
     map(dataSampleGroup => (
-        <DataSampleGroup
+        <DataSampleGroup key={dataSampleGroup.pipeline.id}
             dataSampleGroup={dataSampleGroup}
             discoveryId={discoveryId}
         />

@@ -117,11 +117,10 @@ export const exportPipeline = (discoveryId, pipelineId) => {
         return fetch(`${BACKEND_URL}/discovery/${discoveryId}/execute/${pipelineId}`).then(
             success => success.json().then(
                 json => {
-                        fetch(`${BACKEND_URL}/execution/${json.etlExecutionId}/status`)
-                        return dispatch(onPipelineExported(json))
-                    },
-                    error => {},
-                }
+                    fetch(`${BACKEND_URL}/execution/status?iri=${json.etlExecutionIri}`)
+                    return dispatch(onPipelineExported(json))
+                },
+                error => {}
             ),
             error => {}
         )
