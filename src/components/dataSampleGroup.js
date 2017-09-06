@@ -22,7 +22,7 @@ const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelin
         }
 
         {(pipelineData[dataSampleGroup.pipeline.id] && !pipelineData[dataSampleGroup.pipeline.id].isRunning && pipelineData[dataSampleGroup.pipeline.id].isSuccess) ?
-            <span>Done</span> :
+            <Button label='Go to app'/> :
             null
         }
     </li>

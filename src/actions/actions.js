@@ -16,16 +16,20 @@ export const onBackendStatusFetched = isOnline => ({ type: 'BACKEND_STATUS_UPDAT
 
 export const onComponentsFetchError = () => ({ type: 'COMPONENTS_FETCH_ERROR' })
 
+export const onPipelineExecutionFailed = (executionIri, pipelineId) => ({ type: 'PIPELINE_EXECUTION_FAILED', payload: {executionIri, pipelineId} })
+
+export const onPipelineExecutionFinished = (executionIri, pipelineId) => ({ type: 'PIPELINE_EXECUTION_FINISHED', payload: {executionIri, pipelineId} })
+
 export const onPipelineExported = exportData => dispatch => {
-    dispatch(fetchExecutionStatus(exportData.etlExecutionIri))
+    dispatch(fetchExecutionStatus(exportData.etlExecutionIri, exportData.pipelineId))
     return dispatch({ type: 'PIPELINE_EXPORTED', payload: exportData });
 }
 
-const fetchExecutionStatus = iri => dispatch => {
+const fetchExecutionStatus = (iri, pipelineId) => dispatch => {
     fetch(`${BACKEND_URL}/execution/status?iri=${iri}`).then(
         (success) => {
             success.json().then(
-                json => dispatch(onExecutionStatusFetched(json, iri)),
+                json => dispatch(onExecutionStatusFetched(json, iri, pipelineId)),
                 error => {},
             )
         },
@@ -33,12 +37,18 @@ const fetchExecutionStatus = iri => dispatch => {
     )
 }
 
-export const onExecutionStatusFetched = (status, executionIri) => dispatch => {
-    if(status.isFinished)
+export const onExecutionStatusFetched = (status, executionIri, pipelineId) => dispatch => {
+    if(status.isQueued || status.isRunning)
     {
-
-    }else{
-        dispatch(fetchExecutionStatus(executionIri))
+        window.setTimeout(() =>  dispatch(fetchExecutionStatus(executionIri, pipelineId)), 1000)
+    }
+    else if(status.isFinished)
+    {
+        dispatch(onPipelineExecutionFinished(executionIri, pipelineId))
+    }
+    else(status.isFinished)
+    {
+        dispatch(onPipelineExecutionFailed(executionIri, pipelineId))
     }
 }
 

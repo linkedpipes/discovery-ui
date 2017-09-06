@@ -23,12 +23,15 @@ const DiscoveryInputPart = (props) => (
         <Toolbar themed title={props.label} />
         <DataTable
             baseId={props.componentType}
-            onRowToggle={(index, isActive, count) => props.toggleDiscoveryInputItem(
-                props.components[index] ? props.components[index].uri : null,
-                isActive,
-                props.componentType,
-                count,
-            )}
+            onRowToggle={(index, isActive, count) => {
+                console.log(index, props.components)
+                return props.toggleDiscoveryInputItem(
+                    values(props.components)[index] ? values(props.components)[index].uri : null,
+                    isActive,
+                    props.componentType,
+                    count,
+                )
+            }}
         >
             <TableHeader>
                 <TableRow>
