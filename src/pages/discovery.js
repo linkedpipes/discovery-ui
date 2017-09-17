@@ -40,7 +40,7 @@ class DiscoveryPage extends React.Component {
                                 ? <span>Done!</span>
                                 : <div>
                                     Waiting for the discovery to complete.
-                                    <CircularProgress key="progress" id={'discovery_progress'} />
+                                    <CircularProgress key="progress" id="discovery_progress" />
                                   </div>
                             }
                         </div>

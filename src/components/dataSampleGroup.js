@@ -5,14 +5,14 @@ import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import { exportPipeline } from '../actions/actions'
 
 
-const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelineData }) => (
+const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelineData, applicationExecutorUri }) => (
     <li>
         <span>Minimal iteration: {dataSampleGroup.minimalIteration}</span>
         <div>
             {dataSampleGroup.pipeline.descriptor}
         </div>
         {(!pipelineData[dataSampleGroup.pipeline.id] || (!pipelineData[dataSampleGroup.pipeline.id].isRunning && !pipelineData[dataSampleGroup.pipeline.id].isSuccess))  ?
-            <Button flat label='Export' onClick={() => exportPipeline(discoveryId, dataSampleGroup.pipeline.id)} /> :
+            <Button raised label='Export' onClick={() => exportPipeline(discoveryId, dataSampleGroup.pipeline.id)} /> :
             null
         }
 
@@ -22,13 +22,13 @@ const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelin
         }
 
         {(pipelineData[dataSampleGroup.pipeline.id] && !pipelineData[dataSampleGroup.pipeline.id].isRunning && pipelineData[dataSampleGroup.pipeline.id].isSuccess) ?
-            <Button label='Go to app'/> :
+            <a href={`${applicationExecutorUri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/service`}>Go to app</a> :
             null
         }
     </li>
 )
 
-const mapStateToProps = state => ({pipelineData: state.discovery.pipelineData})
+const mapStateToProps = state => ({ pipelineData: state.discovery.pipelineData })
 
 const mapDispatchToProps = dispatch => {
     return {

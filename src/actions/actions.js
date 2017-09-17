@@ -46,7 +46,7 @@ export const onExecutionStatusFetched = (status, executionIri, pipelineId) => di
     {
         dispatch(onPipelineExecutionFinished(executionIri, pipelineId))
     }
-    else(status.isFinished)
+    else if(status.isFailed)
     {
         dispatch(onPipelineExecutionFailed(executionIri, pipelineId))
     }

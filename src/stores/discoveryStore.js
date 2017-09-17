@@ -43,12 +43,11 @@ export const reducer = (state = defaultState, action) => {
             const data = { isRunning: true, ...action.payolad }
             return assocPath(['discovery', 'pipelineData', action.payload.pipelineId], data, state)
         case 'PIPELINE_EXECUTION_FAILED':
-            const s = assocPath(['discovery', 'pipelineData', action.payload.pipelineId], 'isRunning', false, state)
-            return assocPath(['discovery', 'pipelineData', action.payload.pipelineId], 'isSuccess', false, s)
+            const s = assocPath(['discovery', 'pipelineData', action.payload.pipelineId, 'isRunning'], false, state)
+            return assocPath(['discovery', 'pipelineData', action.payload.pipelineId, 'isSuccess'], false, s)
         case 'PIPELINE_EXECUTION_FINISHED':
-            const s2 = assocPath(['discovery', 'pipelineData', action.payload.pipelineId], 'isRunning', false, state)
-            console.log(s2)
-            return assocPath(['discovery', 'pipelineData', action.payload.pipelineId], 'isSuccess', true, s2)
+            const s2 = assocPath(['discovery', 'pipelineData', action.payload.pipelineId, 'isRunning'], false, state)
+            return assocPath(['discovery', 'pipelineData', action.payload.pipelineId, 'isSuccess'], true, s2)
     default:
         return state
     }

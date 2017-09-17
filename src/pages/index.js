@@ -40,7 +40,7 @@ class IndexPage extends React.Component {
                         </CardText>
                         <CardActions>
                             <Link href="/discovery">
-                                <Button flat primary label="Discover"/>
+                                <Button raised primary label="Discover"/>
                             </Link>
                         </CardActions>
                     </Card>
