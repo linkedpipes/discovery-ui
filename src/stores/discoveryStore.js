@@ -28,7 +28,6 @@ export const reducer = (state = defaultState, action) => {
             return assocPath(['discovery', 'pipelineGroups'], action.pipelineGroups, state)
         case 'TOGGLE_ITEM':
             const { uri, isActive, componentType } = action
-            console.log(action)
             if (uri !== null) {
                 return assocPath(['components', componentType, uri, 'isActive'], isActive, state)
             }

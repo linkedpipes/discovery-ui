@@ -14,8 +14,7 @@ const renderRows = compose(
             <TableColumn>{row.label}</TableColumn>
             <TableColumn>{row.uri}</TableColumn>
         </TableRow>
-    )),
-    values
+    ))
 )
 
 const DiscoveryInputPart = (props) => (
@@ -24,9 +23,8 @@ const DiscoveryInputPart = (props) => (
         <DataTable
             baseId={props.componentType}
             onRowToggle={(index, isActive, count) => {
-                console.log(index, props.components)
                 return props.toggleDiscoveryInputItem(
-                    values(props.components)[index] ? values(props.components)[index].uri : null,
+                    props.components[index-1] ? props.components[index-1].uri : null,
                     isActive,
                     props.componentType,
                     count,
