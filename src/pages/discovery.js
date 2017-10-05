@@ -7,22 +7,28 @@ import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import { values, compose, map, filter, mergeAll } from 'ramda'
 import Layout from '../components/layout'
 import PipelineGroups from '../components/pipelineGroups'
+import Button from 'react-md/lib/Buttons/Button'
 import { initStore } from '../stores/discoveryStore'
-import { handleDiscoveryStart } from '../actions/actions'
+import { handleDiscoveryStart, persistState, handleDiscoveryStartWithInput } from '../actions/actions'
 
 
 class DiscoveryPage extends React.Component {
 
     componentDidMount() {
-        const activeComponentUris = compose(
-            map(c => c.uri),
-            filter(c => c.isActive),
-            values,
-            mergeAll,
-            values,
-        )(this.props.components)
 
-        this.props.handleDiscoveryStart(activeComponentUris)
+        if (this.props.components.length === 0) {
+            const activeComponentUris = compose(
+                map(c => c.uri),
+                filter(c => c.isActive),
+                values,
+                mergeAll,
+                values,
+            )(this.props.components)
+
+            this.props.handleDiscoveryStart(activeComponentUris)
+        } else {
+            this.props.handleDiscoveryStartWithInput(this.props.inputUri)
+        }
     }
 
     render() {
@@ -47,6 +53,8 @@ class DiscoveryPage extends React.Component {
                         <div>
                             Discovered {this.props.discovery.status.pipelineCount} pipeline(s) in total.
                         </div>
+                        <br />
+                        <Button raised primary label="Persist state" onClick={this.props.persistState}/>
                     </CardText>
                 </Card>
                 <PipelineGroups
@@ -63,12 +71,15 @@ DiscoveryPage.propTypes = {
 
 const mapStateToProps = state => ({
     components: state.components,
-    discovery: state.discovery
+    discovery: state.discovery,
+    inputUri: state.inputUri,
 })
 
 const mapDispatchToProps = dispatch => {
     return {
         handleDiscoveryStart: (activeComponentUris) => dispatch(handleDiscoveryStart(activeComponentUris)),
+        persistState: () => dispatch(persistState()),
+        handleDiscoveryStartWithInput: (inputUri) => dispatch(handleDiscoveryStartWithInput(inputUri))
     }
 }
 

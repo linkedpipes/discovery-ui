@@ -1,6 +1,5 @@
 import React from 'react'
 import Toolbar from 'react-md/lib/Toolbars'
-import Link from 'next/link'
 
 const titleLink = <a href="/">LinkedPipes Discovery</a>
 

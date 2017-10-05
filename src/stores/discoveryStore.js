@@ -14,6 +14,7 @@ const defaultState = {
         pipelineData: {},
         pipelineGroups: { applicationGroups: [] },
     },
+    inputUri: null,
 }
 
 export const reducer = (state = defaultState, action) => {
@@ -47,6 +48,8 @@ export const reducer = (state = defaultState, action) => {
         case 'PIPELINE_EXECUTION_FINISHED':
             const s2 = assocPath(['discovery', 'pipelineData', action.payload.pipelineId, 'isRunning'], false, state)
             return assocPath(['discovery', 'pipelineData', action.payload.pipelineId, 'isSuccess'], true, s2)
+        case 'INPUT_URI_CHANGED':
+            return assocPath(['inputUri'], action.payload.uri, state)
     default:
         return state
     }

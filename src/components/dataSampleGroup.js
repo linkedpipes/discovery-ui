@@ -12,7 +12,7 @@ const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelin
             {dataSampleGroup.pipeline.descriptor}
         </div>
         {(!pipelineData[dataSampleGroup.pipeline.id] || (!pipelineData[dataSampleGroup.pipeline.id].isRunning && !pipelineData[dataSampleGroup.pipeline.id].isSuccess))  ?
-            <Button raised label='Export' onClick={() => exportPipeline(discoveryId, dataSampleGroup.pipeline.id)} /> :
+            <Button raised label='Run' onClick={() => exportPipeline(discoveryId, dataSampleGroup.pipeline.id)} /> :
             null
         }
 

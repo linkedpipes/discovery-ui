@@ -7,11 +7,14 @@ const PipelineGroups = ({ pipelineGroups, discoveryId }) => (
         <br />
         {compose(
             map(applicationGroup => (
-                <ApplicationGroup
-                    key={applicationGroup.applicationInstance.uri}
-                    applicationGroup={applicationGroup}
-                    discoveryId={discoveryId}
-                />
+                <div>
+                    <ApplicationGroup
+                        key={applicationGroup.applicationInstance.uri}
+                        applicationGroup={applicationGroup}
+                        discoveryId={discoveryId}
+                    />
+                    <br/>
+                </div>
             ))
         )(pipelineGroups.applicationGroups)}
     </div>

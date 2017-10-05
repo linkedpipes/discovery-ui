@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch'
 
+
 export const onComponentsFetched = components => ({ type: 'COMPONENTS_FETCHED', components })
 
 export const onDiscoveryStartSuccess = ({ id }) => ({ type: 'DISCOVERY_STARTED', id })
@@ -60,6 +61,8 @@ export const toggleDiscoveryInputItem = (uri, isActive, componentType, count) =>
     count,
 })
 
+export const setInputUri = uri => ({ type: 'INPUT_URI_CHANGED', payload: { uri } })
+
 export function fetchBackendStatus() {
     return dispatch => {
         return fetch(`${BACKEND_URL}/status`).then(
@@ -84,12 +87,53 @@ export function fetchBackendStatus() {
     }
 }
 
+export function persistState() {
+    return dispatch => {
+
+        console.log(JSON.stringify())
+
+        return fetch(`${BACKEND_URL}/persist`, {
+            method: 'POST',
+            headers: new Headers({ 'content-type': 'application/json' }),
+            body: JSON.stringify(),
+        }).then(
+            (success) => {
+                return success.json().then(
+                    json => dispatch(),
+                    error => dispatch(),
+                ).then(
+                    action => dispatch(),
+                )
+            },
+            error => dispatch(onDiscoveryStartFailed()),
+        )
+    }
+}
+
 export function handleDiscoveryStart(activeComponentUris) {
     return dispatch => {
         return fetch(`${BACKEND_URL}/discovery/start`, {
             method: 'POST',
             headers: new Headers({ 'content-type': 'application/json' }),
             body: JSON.stringify(activeComponentUris),
+        }).then(
+            (success) => {
+                return success.json().then(
+                    json => dispatch(onDiscoveryStartSuccess(json)),
+                    error => dispatch(onDiscoveryStartFailed()),
+                ).then(
+                    action => dispatch(checkDiscoveryStatus(action.id)),
+                )
+            },
+            error => dispatch(onDiscoveryStartFailed()),
+        )
+    }
+}
+
+export function handleDiscoveryStartWithInput(statusUri) {
+    return dispatch => {
+        return fetch(`${BACKEND_URL}/discovery/startFromInput?uri=${statusUri}`, {
+            method: 'GET',
         }).then(
             (success) => {
                 return success.json().then(
