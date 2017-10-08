@@ -15,6 +15,7 @@ const defaultState = {
         pipelineGroups: { applicationGroups: [] },
     },
     inputUri: null,
+    persisted: false
 }
 
 export const reducer = (state = defaultState, action) => {
@@ -22,7 +23,7 @@ export const reducer = (state = defaultState, action) => {
         case 'COMPONENTS_FETCHED':
             return assocPath(['components'], action.components, state)
         case 'DISCOVERY_STARTED':
-            return assocPath(['discovery', 'id'], action.id, state)
+            return assocPath(['discovery'], { ...defaultState.discovery, id: action.id }, state)
         case 'DISCOVERY_STATUS_UPDATED':
             return assocPath(['discovery', 'status'], action.status, state)
         case 'PIPELINE_GROUPS_UPDATED':
@@ -50,6 +51,8 @@ export const reducer = (state = defaultState, action) => {
             return assocPath(['discovery', 'pipelineData', action.payload.pipelineId, 'isSuccess'], true, s2)
         case 'INPUT_URI_CHANGED':
             return assocPath(['inputUri'], action.payload.uri, state)
+        case 'STATE_PERSISTED':
+            return assocPath(['persisted'], true, state);
     default:
         return state
     }

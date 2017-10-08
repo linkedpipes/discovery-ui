@@ -21,6 +21,8 @@ export const onPipelineExecutionFailed = (executionIri, pipelineId) => ({ type: 
 
 export const onPipelineExecutionFinished = (executionIri, pipelineId) => ({ type: 'PIPELINE_EXECUTION_FINISHED', payload: {executionIri, pipelineId} })
 
+export const onStatePersisted = (discoveryId) => ({ type: 'STATE_PERSISTED', payload: { discoveryId } })
+
 export const onPipelineExported = exportData => dispatch => {
     dispatch(fetchExecutionStatus(exportData.etlExecutionIri, exportData.pipelineId))
     return dispatch({ type: 'PIPELINE_EXPORTED', payload: exportData });
@@ -87,25 +89,22 @@ export function fetchBackendStatus() {
     }
 }
 
-export function persistState() {
+export function persistState(state) {
     return dispatch => {
-
-        console.log(JSON.stringify())
-
         return fetch(`${BACKEND_URL}/persist`, {
             method: 'POST',
             headers: new Headers({ 'content-type': 'application/json' }),
-            body: JSON.stringify(),
+            body: JSON.stringify(state),
         }).then(
             (success) => {
                 return success.json().then(
-                    json => dispatch(),
-                    error => dispatch(),
+                    json => dispatch(onStatePersisted(state.discovery.id)),
+                    error => dispatch(() => {}),
                 ).then(
-                    action => dispatch(),
+                    action => dispatch(() => {}),
                 )
             },
-            error => dispatch(onDiscoveryStartFailed()),
+            error => dispatch(() => {}),
         )
     }
 }

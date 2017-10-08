@@ -4,6 +4,7 @@ import Card from 'react-md/lib/Cards/Card'
 import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
+import TextField from 'react-md/lib/TextFields';
 import { values, compose, map, filter, mergeAll } from 'ramda'
 import Layout from '../components/layout'
 import PipelineGroups from '../components/pipelineGroups'
@@ -54,7 +55,13 @@ class DiscoveryPage extends React.Component {
                             Discovered {this.props.discovery.status.pipelineCount} pipeline(s) in total.
                         </div>
                         <br />
-                        <Button raised primary label="Persist state" onClick={this.props.persistState}/>
+                        {this.props.persisted === false ?
+                            <Button raised primary label="Persist state" onClick={() => this.props.persistState(this.props.state)}/>
+                            :
+                            <div>
+                                <TextField value={`${BACKEND_URL}/result/${this.props.discovery.id}`} readonly />
+                            </div>
+                        }
                     </CardText>
                 </Card>
                 <PipelineGroups
@@ -73,12 +80,14 @@ const mapStateToProps = state => ({
     components: state.components,
     discovery: state.discovery,
     inputUri: state.inputUri,
+    state: state,
+    persisted: state.persisted,
 })
 
 const mapDispatchToProps = dispatch => {
     return {
         handleDiscoveryStart: (activeComponentUris) => dispatch(handleDiscoveryStart(activeComponentUris)),
-        persistState: () => dispatch(persistState()),
+        persistState: (state) => dispatch(persistState(state)),
         handleDiscoveryStartWithInput: (inputUri) => dispatch(handleDiscoveryStartWithInput(inputUri))
     }
 }

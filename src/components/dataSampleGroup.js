@@ -22,7 +22,9 @@ const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelin
         }
 
         {(pipelineData[dataSampleGroup.pipeline.id] && !pipelineData[dataSampleGroup.pipeline.id].isRunning && pipelineData[dataSampleGroup.pipeline.id].isSuccess) ?
-            <a href={`${applicationExecutorUri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/service`}>Go to app</a> :
+            <a href={`${applicationExecutorUri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/service`}>
+                <Button raised label='Go to app'/>
+            </a> :
             null
         }
     </li>
