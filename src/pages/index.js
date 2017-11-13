@@ -5,6 +5,7 @@ import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
 import CardActions from 'react-md/lib/Cards/CardActions'
 import Button from 'react-md/lib/Buttons/Button'
+import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import DiscoveryInput from '../components/discoveryInput'
 import { initStore } from '../stores/discoveryStore'
 import { fetchBackendStatus, toggleDiscoveryInputItem } from '../actions/actions'
@@ -24,7 +25,7 @@ class IndexPage extends React.Component {
             <Layout>
                 {(this.props.backendStatus.isOnline === false) && <BackendStatus /> }
 
-                {(Object.keys(this.props.components).length > 0) &&
+                {(Object.keys(this.props.components).length > 0) ?
                     <Card>
                         <CardTitle
                             title="Start discovery"
@@ -43,7 +44,8 @@ class IndexPage extends React.Component {
                                 <Button raised primary label="Discover"/>
                             </Link>
                         </CardActions>
-                    </Card>
+                    </Card> :
+                    <CircularProgress key="progress" id="discovery_progress" />
                 }
             </Layout>
         )

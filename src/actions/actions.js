@@ -202,3 +202,5 @@ export const exportPipeline = (discoveryId, pipelineId) => {
         )
     }
 }
+
+export const showDataSample = (discoveryId, pipelineId) => ({ type: 'SHOW_DATASAMPLE_CLICKED', payload: { discoveryId, pipelineId } })

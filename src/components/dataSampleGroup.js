@@ -2,7 +2,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
-import { exportPipeline } from '../actions/actions'
+import OutputDataSamplePreview from '../components/outputDataSamplePreview'
+import { exportPipeline, showDataSample } from '../actions/actions'
 
 
 const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelineData, applicationExecutorUri }) => (
@@ -12,7 +13,16 @@ const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelin
             {dataSampleGroup.pipeline.descriptor}
         </div>
         {(!pipelineData[dataSampleGroup.pipeline.id] || (!pipelineData[dataSampleGroup.pipeline.id].isRunning && !pipelineData[dataSampleGroup.pipeline.id].isSuccess))  ?
-            <Button raised label='Run' onClick={() => exportPipeline(discoveryId, dataSampleGroup.pipeline.id)} /> :
+            <div>
+                <Button raised label='Run' onClick={() => exportPipeline(discoveryId, dataSampleGroup.pipeline.id)} />
+                <OutputDataSamplePreview dataSample={dataSampleGroup.pipeline.dataSample} />
+                <a href={`${applicationExecutorUri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/ods/service`}>
+                    <Button raised label='Show output data sample in app'/>
+                </a>
+                <a href={`${applicationExecutorUri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/service`}>
+                    <Button raised label='Go to app'/>
+                </a>
+            </div> :
             null
         }
 
@@ -35,6 +45,7 @@ const mapStateToProps = state => ({ pipelineData: state.discovery.pipelineData }
 const mapDispatchToProps = dispatch => {
     return {
         exportPipeline: (discoveryId, pipelineId) => dispatch(exportPipeline(discoveryId, pipelineId)),
+        showDataSample: (discoveryId, pipelineId) => dispatch(showDataSample(discoveryId, pipelineId)),
     }
 }
 
