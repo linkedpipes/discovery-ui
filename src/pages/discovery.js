@@ -17,15 +17,17 @@ class DiscoveryPage extends React.Component {
 
     componentDidMount() {
 
-        if (this.props.components.length === 0) {
-            const activeComponentUris = compose(
-                map(c => c.uri),
-                filter(c => c.isActive),
-                values,
-                mergeAll,
-                values,
-            )(this.props.components)
+        const activeComponentUris = compose(
+            map(c => c.uri),
+            filter(c => c.isActive),
+            values,
+            mergeAll,
+            values,
+        )(this.props.components)
 
+        console.log(activeComponentUris.length !== 0);
+
+        if (activeComponentUris.length !== 0) {
             this.props.handleDiscoveryStart(activeComponentUris)
         } else {
             this.props.handleDiscoveryStartWithInput(this.props.inputUri)
