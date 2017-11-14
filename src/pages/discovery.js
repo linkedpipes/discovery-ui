@@ -25,8 +25,6 @@ class DiscoveryPage extends React.Component {
             values,
         )(this.props.components)
 
-        console.log(activeComponentUris.length !== 0);
-
         if (activeComponentUris.length !== 0) {
             this.props.handleDiscoveryStart(activeComponentUris)
         } else {

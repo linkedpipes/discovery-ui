@@ -30,6 +30,7 @@ export default class OutputDataSamplePreview extends PureComponent {
                     onHide={this.hide}
                     modal
                     actions={actions}
+                    width={1000}
                 >
                     <pre id="speed-boost-description" className="md-color--secondary-text">
                         {this.props.dataSample}
