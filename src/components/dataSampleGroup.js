@@ -6,7 +6,7 @@ import OutputDataSamplePreview from '../components/outputDataSamplePreview'
 import { exportPipeline, showDataSample } from '../actions/actions'
 
 
-const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelineData, applicationExecutorUri }) => (
+const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelineData, applicationExecutorIri }) => (
     <li>
         <span>Minimal iteration: {dataSampleGroup.minimalIteration}</span>
         <div>
@@ -16,10 +16,10 @@ const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelin
             <div>
                 <Button raised label='Run' onClick={() => exportPipeline(discoveryId, dataSampleGroup.pipeline.id)} />
                 <OutputDataSamplePreview dataSample={dataSampleGroup.pipeline.dataSample} />
-                <a href={`${applicationExecutorUri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/ods/service`}>
+                <a href={`${applicationExecutorIri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/ods/service`}>
                     <Button raised label='Show output data sample in app'/>
                 </a>
-                <a href={`${applicationExecutorUri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/service`}>
+                <a href={`${applicationExecutorIri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/service`}>
                     <Button raised label='Go to app'/>
                 </a>
             </div> :
@@ -32,7 +32,7 @@ const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelin
         }
 
         {(pipelineData[dataSampleGroup.pipeline.id] && !pipelineData[dataSampleGroup.pipeline.id].isRunning && pipelineData[dataSampleGroup.pipeline.id].isSuccess) ?
-            <a href={`${applicationExecutorUri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/service`}>
+            <a href={`${applicationExecutorIri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/service`}>
                 <Button raised label='Go to app'/>
             </a> :
             null
