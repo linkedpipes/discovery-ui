@@ -67,7 +67,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         handleServerStatusPrompt: () => dispatch(fetchBackendStatus()),
-        handleToggleDiscoveryInputItem: (uri, active, count) => dispatch(toggleDiscoveryInputItem(uri, active, count))
+        handleToggleDiscoveryInputItem: (iri, active, count) => dispatch(toggleDiscoveryInputItem(iri, active, count))
     }
 }
 

@@ -17,18 +17,18 @@ class DiscoveryPage extends React.Component {
 
     componentDidMount() {
 
-        const activeComponentUris = compose(
-            map(c => c.uri),
+        const activeComponentIris = compose(
+            map(c => c.iri),
             filter(c => c.isActive),
             values,
             mergeAll,
             values,
         )(this.props.components)
 
-        if (activeComponentUris.length !== 0) {
-            this.props.handleDiscoveryStart(activeComponentUris)
+        if (activeComponentIris.length !== 0) {
+            this.props.handleDiscoveryStart(activeComponentIris)
         } else {
-            this.props.handleDiscoveryStartWithInput(this.props.inputUri)
+            this.props.handleDiscoveryStartWithInput(this.props.inputIri)
         }
     }
 
@@ -79,7 +79,7 @@ DiscoveryPage.propTypes = {
 const mapStateToProps = state => ({
     components: state.components,
     discovery: state.discovery,
-    inputUri: state.inputUri,
+    inputIri: state.inputIri,
     state: state,
     persisted: state.persisted,
 })

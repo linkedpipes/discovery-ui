@@ -29,13 +29,13 @@ export const reducer = (state = defaultState, action) => {
         case 'PIPELINE_GROUPS_UPDATED':
             return assocPath(['discovery', 'pipelineGroups'], action.pipelineGroups, state)
         case 'TOGGLE_ITEM':
-            const { uri, isActive, componentType } = action
-            if (uri !== null) {
-                return assocPath(['components', componentType, uri, 'isActive'], isActive, state)
+            const { iri, isActive, componentType } = action
+            if (iri !== null) {
+                return assocPath(['components', componentType, iri, 'isActive'], isActive, state)
             }
 
             return compose(
-                reduce((acc, item) => assocPath(['components', componentType, item.uri, 'isActive'], isActive, acc), state),
+                reduce((acc, item) => assocPath(['components', componentType, item.iri, 'isActive'], isActive, acc), state),
                 values,
             )(state.components[componentType])
         case 'BACKEND_STATUS_UPDATED':
@@ -49,8 +49,8 @@ export const reducer = (state = defaultState, action) => {
         case 'PIPELINE_EXECUTION_FINISHED':
             const s2 = assocPath(['discovery', 'pipelineData', action.payload.pipelineId, 'isRunning'], false, state)
             return assocPath(['discovery', 'pipelineData', action.payload.pipelineId, 'isSuccess'], true, s2)
-        case 'INPUT_URI_CHANGED':
-            return assocPath(['inputUri'], action.payload.uri, state)
+        case 'INPUT_IRI_CHANGED':
+            return assocPath(['inputIri'], action.payload.iri, state)
         case 'STATE_PERSISTED':
             return assocPath(['persisted'], true, state)
     default:

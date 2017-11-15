@@ -55,15 +55,15 @@ export const onExecutionStatusFetched = (status, executionIri, pipelineId) => di
     }
 }
 
-export const toggleDiscoveryInputItem = (uri, isActive, componentType, count) => ({
+export const toggleDiscoveryInputItem = (iri, isActive, componentType, count) => ({
     type: 'TOGGLE_ITEM',
-    uri,
+    iri,
     isActive,
     componentType,
     count,
 })
 
-export const setInputUri = uri => ({ type: 'INPUT_URI_CHANGED', payload: { uri } })
+export const setInputIri = iri => ({ type: 'INPUT_IRI_CHANGED', payload: { iri } })
 
 export function fetchBackendStatus() {
     return dispatch => {

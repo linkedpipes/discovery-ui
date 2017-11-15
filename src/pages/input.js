@@ -7,7 +7,7 @@ import CardActions from 'react-md/lib/Cards/CardActions'
 import Button from 'react-md/lib/Buttons/Button'
 import TextField from 'react-md/lib/TextFields';
 import { initStore } from '../stores/discoveryStore'
-import { fetchBackendStatus, setInputUri } from '../actions/actions'
+import { fetchBackendStatus, setInputIri } from '../actions/actions'
 import Layout from '../components/layout'
 import Link from 'next/link'
 import BackendStatus from '../components/backendStatus'
@@ -27,17 +27,17 @@ class InputPage extends React.Component {
                 <Card>
                     <CardTitle
                         title="Start discovery"
-                        subtitle="Provide URI defining a discovery input"
+                        subtitle="Provide IRI defining a discovery input"
                     />
                     <CardText>
                         <form>
                             <TextField
-                                id="inputUri"
+                                id="inputIri"
                                 label="Discovery input IRI"
                                 lineDirection="center"
                                 placeholder=""
                                 className="md-cell md-cell--bottom"
-                                onChange={this.props.handleInputUriChange}
+                                onChange={this.props.handleInputIriChange}
                             />
                         </form>
                     </CardText>
@@ -65,7 +65,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         handleServerStatusPrompt: () => dispatch(fetchBackendStatus()),
-        handleInputUriChange: (uri) => dispatch(setInputUri(uri))
+        handleInputIriChange: (iri) => dispatch(setInputIri(iri))
     }
 }
 
