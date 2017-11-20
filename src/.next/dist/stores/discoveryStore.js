@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.initStore = exports.reducer = undefined;
 
-var _extends2 = require('babel-runtime/helpers/extends');
+var _extends2 = require('next/node_modules/babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
 

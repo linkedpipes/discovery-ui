@@ -19,9 +19,6 @@ const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelin
                 <a href={`${applicationExecutorIri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/ods/service`}>
                     <Button raised label='Show output data sample in app'/>
                 </a>
-                <a href={`${applicationExecutorIri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/service`}>
-                    <Button raised label='Go to app'/>
-                </a>
             </div> :
             null
         }

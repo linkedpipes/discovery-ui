@@ -9,7 +9,7 @@ exports.persistState = persistState;
 exports.handleDiscoveryStart = handleDiscoveryStart;
 exports.handleDiscoveryStartWithInput = handleDiscoveryStartWithInput;
 
-var _stringify = require('babel-runtime/core-js/json/stringify');
+var _stringify = require('next/node_modules/babel-runtime/core-js/json/stringify');
 
 var _stringify2 = _interopRequireDefault(_stringify);
 
