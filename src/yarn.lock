@@ -4069,7 +4069,7 @@ react-hot-loader@3.0.0-beta.7:
     redbox-react "^1.3.6"
     source-map "^0.4.4"
 
-react-md@^1.0.18:
+react-md@1.2.8:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/react-md/-/react-md-1.2.8.tgz#727762efb17a6dd2d00a87f671f72f21330fc853"
   dependencies:
