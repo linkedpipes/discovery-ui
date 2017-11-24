@@ -7,7 +7,7 @@ import CardActions from 'react-md/lib/Cards/CardActions'
 import Button from 'react-md/lib/Buttons/Button'
 import TextField from 'react-md/lib/TextFields';
 import { initStore } from '../stores/discoveryStore'
-import { fetchBackendStatus, setInputIri } from '../actions/actions'
+import { fetchBackendStatus, setInputIri, setInput } from '../actions/actions'
 import Layout from '../components/layout'
 import Link from 'next/link'
 import BackendStatus from '../components/backendStatus'
@@ -36,14 +36,21 @@ class InputPage extends React.Component {
                                 label="Discovery input IRI"
                                 lineDirection="center"
                                 placeholder=""
-                                className="md-cell md-cell--bottom"
                                 onChange={this.props.handleInputIriChange}
+                            />
+
+                            <TextField
+                                id="floating-multiline"
+                                label="Discovery input"
+                                lineDirection="right"
+                                rows={10}
+                                onChange={this.props.handleInputChange}
                             />
                         </form>
                     </CardText>
                     <CardActions>
                         <Link href="/discovery">
-                            <Button raised primary label="Discover"/>
+                            <Button raised primary label="Discover" />
                         </Link>
                     </CardActions>
                 </Card>
@@ -58,14 +65,15 @@ InputPage.propTypes = {
 
 const mapStateToProps = state => {
     return {
-        backendStatus: state.backendStatus
+        backendStatus: state.backendStatus,
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
         handleServerStatusPrompt: () => dispatch(fetchBackendStatus()),
-        handleInputIriChange: (iri) => dispatch(setInputIri(iri))
+        handleInputIriChange: (iri) => dispatch(setInputIri(iri)),
+        handleInputChange: (input) => dispatch(setInput(input)),
     }
 }
 

@@ -65,6 +65,8 @@ export const toggleDiscoveryInputItem = (iri, isActive, componentType, count) =>
 
 export const setInputIri = iri => ({ type: 'INPUT_IRI_CHANGED', payload: { iri } })
 
+export const setInput = input => ({ type: 'INPUT_CHANGED', payload: { input } })
+
 export function fetchBackendStatus() {
     return dispatch => {
         return fetch(`${BACKEND_URL}/status`).then(
@@ -129,10 +131,30 @@ export function handleDiscoveryStart(activeComponentUris) {
     }
 }
 
-export function handleDiscoveryStartWithInput(statusUri) {
+export function handleDiscoveryStartWithInputIri(inputIri) {
     return dispatch => {
-        return fetch(`${BACKEND_URL}/discovery/startFromInput?uri=${statusUri}`, {
+        return fetch(`${BACKEND_URL}/discovery/startFromInputIri?iri=${inputIri}`, {
             method: 'GET',
+        }).then(
+            (success) => {
+                return success.json().then(
+                    json => dispatch(onDiscoveryStartSuccess(json)),
+                    error => dispatch(onDiscoveryStartFailed()),
+                ).then(
+                    action => dispatch(checkDiscoveryStatus(action.id)),
+                )
+            },
+            error => dispatch(onDiscoveryStartFailed()),
+        )
+    }
+}
+
+export function handleDiscoveryStartWithInput(input) {
+    return dispatch => {
+        return fetch(`${BACKEND_URL}/discovery/startFromInput`, {
+            method: 'POST',
+            headers: new Headers({ 'content-type': 'text/plain' }),
+            body: input,
         }).then(
             (success) => {
                 return success.json().then(

@@ -10,7 +10,7 @@ import Layout from '../components/layout'
 import PipelineGroups from '../components/pipelineGroups'
 import Button from 'react-md/lib/Buttons/Button'
 import { initStore } from '../stores/discoveryStore'
-import { handleDiscoveryStart, persistState, handleDiscoveryStartWithInput } from '../actions/actions'
+import { handleDiscoveryStart, persistState, handleDiscoveryStartWithInput, handleDiscoveryStartWithInputIri } from '../actions/actions'
 
 
 class DiscoveryPage extends React.Component {
@@ -27,8 +27,10 @@ class DiscoveryPage extends React.Component {
 
         if (activeComponentIris.length !== 0) {
             this.props.handleDiscoveryStart(activeComponentIris)
-        } else {
-            this.props.handleDiscoveryStartWithInput(this.props.inputIri)
+        } else if (this.props.inputIri) {
+            this.props.handleDiscoveryStartWithInputIri(this.props.inputIri)
+        } else if (this.props.input) {
+            this.props.handleDiscoveryStartWithInput(this.props.input)
         }
     }
 
@@ -80,6 +82,7 @@ const mapStateToProps = state => ({
     components: state.components,
     discovery: state.discovery,
     inputIri: state.inputIri,
+    input: state.input,
     state: state,
     persisted: state.persisted,
 })
@@ -88,7 +91,8 @@ const mapDispatchToProps = dispatch => {
     return {
         handleDiscoveryStart: (activeComponentUris) => dispatch(handleDiscoveryStart(activeComponentUris)),
         persistState: (state) => dispatch(persistState(state)),
-        handleDiscoveryStartWithInput: (inputUri) => dispatch(handleDiscoveryStartWithInput(inputUri))
+        handleDiscoveryStartWithInput: (input) => dispatch(handleDiscoveryStartWithInput(input)),
+        handleDiscoveryStartWithInputIri: (inputIri) => dispatch(handleDiscoveryStartWithInputIri(inputIri)),
     }
 }
 

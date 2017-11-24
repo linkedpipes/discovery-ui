@@ -15,6 +15,7 @@ const defaultState = {
         pipelineGroups: { applicationGroups: [] },
     },
     inputUri: null,
+    input: null,
     persisted: false,
 }
 
@@ -53,6 +54,9 @@ export const reducer = (state = defaultState, action) => {
             return assocPath(['inputIri'], action.payload.iri, state)
         case 'STATE_PERSISTED':
             return assocPath(['persisted'], true, state)
+        case 'INPUT_CHANGED':
+            console.log(state)
+            return assocPath(['input'], action.payload.input, state)
     default:
         return state
     }
