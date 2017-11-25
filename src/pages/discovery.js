@@ -59,12 +59,10 @@ class DiscoveryPage extends React.Component {
                         <br />
                             <Button raised primary label="Persist state" onClick={() => this.props.persistState(this.props.state)}/>
 
-                        {this.props.persisted ?
+                        {this.props.persisted &&
                             <div>
                                 <TextField value={`${BACKEND_URL}/result/${this.props.discovery.id}`} readonly />
                             </div>
-                            :
-                            null
                         }
                     </CardText>
                 </Card>
