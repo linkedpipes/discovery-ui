@@ -57,12 +57,14 @@ class DiscoveryPage extends React.Component {
                             Discovered {this.props.discovery.status.pipelineCount} pipeline(s) in total.
                         </div>
                         <br />
-                        {this.props.persisted === false ?
                             <Button raised primary label="Persist state" onClick={() => this.props.persistState(this.props.state)}/>
-                            :
+
+                        {this.props.persisted ?
                             <div>
                                 <TextField value={`${BACKEND_URL}/result/${this.props.discovery.id}`} readonly />
                             </div>
+                            :
+                            null
                         }
                     </CardText>
                 </Card>
