@@ -11,11 +11,9 @@ const NavBar = ({ children }) => (
         title={titleLink}
         actions={(
             <a href="/input">
-                <Button
-                    raised
-                    label='Advanced mode'
-                    secondary
-                />
+                <Button raised secondary>
+                    Advanced mode
+                </Button>
             </a>
         )}
     />

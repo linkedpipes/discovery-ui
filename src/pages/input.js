@@ -7,7 +7,7 @@ import CardActions from 'react-md/lib/Cards/CardActions'
 import Button from 'react-md/lib/Buttons/Button'
 import TextField from 'react-md/lib/TextFields';
 import { initStore } from '../stores/discoveryStore'
-import { fetchBackendStatus, setInputIri, setInput } from '../actions/actions'
+import { fetchBackendStatus, setInputIri, setInput, setListIri } from '../actions/actions'
 import Layout from '../components/layout'
 import Link from 'next/link'
 import BackendStatus from '../components/backendStatus'
@@ -54,6 +54,31 @@ class InputPage extends React.Component {
                         </Link>
                     </CardActions>
                 </Card>
+
+                <br /><br />
+
+                <Card>
+                    <CardTitle
+                        title="Run multiple discoveries"
+                        subtitle="Provide IRI defining a list of discovery inputs"
+                    />
+                    <CardText>
+                        <form>
+                            <TextField
+                                id="listIri"
+                                label="Discovery list IRI"
+                                lineDirection="center"
+                                placeholder=""
+                                onChange={this.props.handleListIriChange}
+                            />
+                        </form>
+                    </CardText>
+                    <CardActions>
+                        <Link href="/multirunner">
+                            <Button raised primary label="Run multiple discoveries" />
+                        </Link>
+                    </CardActions>
+                </Card>
             </Layout>
         )
     }
@@ -74,6 +99,7 @@ const mapDispatchToProps = dispatch => {
         handleServerStatusPrompt: () => dispatch(fetchBackendStatus()),
         handleInputIriChange: (iri) => dispatch(setInputIri(iri)),
         handleInputChange: (input) => dispatch(setInput(input)),
+        handleListIriChange: (iri) => {setListIri(iri)},
     }
 }
 
