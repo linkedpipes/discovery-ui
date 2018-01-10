@@ -10,51 +10,99 @@ import Layout from '../components/layout'
 import PipelineGroups from '../components/pipelineGroups'
 import Button from 'react-md/lib/Buttons/Button'
 import { initStore } from '../stores/discoveryStore'
-import { handleDiscoveryStart, persistState, handleDiscoveryStartWithInput, handleDiscoveryStartWithInputIri } from '../actions/actions'
+import { handleMultirunnerStart, getInputsFromIri, getInputs, goToDetail, getStats } from '../actions/actions'
 
 
 class MultiRunnerPage extends React.Component {
 
     componentDidMount() {
-        this.props.getInputs(this.props.inputListIri)
+        const { multirunnerStatus, inputData, getInputsFromIri, getInputs } = this.props;
+        if(!multirunnerStatus.current || multirunnerStatus.current+1 < multirunnerStatus.inputIris.length) {
+            if (inputData.listIri) {
+                getInputsFromIri(inputData.listIri)
+            } else if (inputData.list) {
+                getInputs(inputData.list)
+            }
+        }
+    }
+
+    getDiscoveryStatusMessage(discoveryId, discoveries) {
+        if (!discoveryId){
+            return "The discovery is pending. Please, wait.";
+        }
+
+        if (!discoveries[discoveryId].status.isFinished) {
+            return `The discovery is currently running and has found ${discoveries[discoveryId].status.pipelineCount} pipelines so far.`;
+        }
+
+        if (discoveries[discoveryId].status.isFinished) {
+            return `The discovery has finished and found ${discoveries[discoveryId].status.pipelineCount} pipelines.`;
+        }
+    }
+
+    getDiscoveryAction(discoveryId, discoveries){
+        if (discoveryId && discoveries[discoveryId].status.isFinished) {
+            return (
+                <Button raised onClick={() => this.props.goToDetail(discoveryId)}>
+                    See details
+                </Button>
+            );
+        }
+
+        return <CircularProgress/>;
+    }
+
+    renderDiscoveryCard(i, discoveries) {
+        return (
+            <Card key={i}>
+                <CardTitle
+                    title={i}
+                    subtitle=""
+                />
+                <CardText>
+                    <div>
+                        <table width="100%">
+                            <tr>
+                                <td>{this.getDiscoveryStatusMessage(discoveries[i], discoveries)}</td>
+                                <td>{this.getDiscoveryAction(discoveries[i], discoveries)}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </CardText>
+            </Card>
+        );
     }
 
     render() {
+        const { multirunnerStatus, inputData, discoveries, csv } = this.props;
+        const isRunning = discoveries.inputIris;
+        const subtitle = multirunnerStatus.inputIris ?
+            `Discoveries are running: ${multirunnerStatus.current+1} out of ${multirunnerStatus.inputIris.length}. Please, wait.` :
+            'Discoveries are running. Please, wait.';
+        const hasIris = inputData.iris;
         return (
             <Layout>
                 <Card>
                     <CardTitle
-                        title="Discoveries progress"
-                        subtitle="Discoveries are running. Please, wait."
+                        title="Discoveries in progress"
+                        subtitle={subtitle}
                     />
-                    <CardText style={{textAlign: 'center'}}>
-                        <div>
-                            {
-                                this.props.discovery.status.isFinished
-                                ? <span>Done!</span>
-                                : <div>
-                                    Waiting for the discovery to complete.
-                                    <CircularProgress key="progress" id="discovery_progress" />
-                                  </div>
-                            }
-                        </div>
-                        <div>
-                            Discovered {this.props.discovery.status.pipelineCount} pipeline(s) in total.
-                        </div>
-                        <br />
-                            <Button raised primary label="Persist state" onClick={() => this.props.persistState(this.props.state)}/>
-
-                        {this.props.persisted &&
-                            <div>
-                                <TextField value={`${BACKEND_URL}/result/${this.props.discovery.id}`} readonly />
-                            </div>
-                        }
+                    <CardText>
+                        <Button primary raised onClick={() => this.props.getStats(discoveries)}>
+                            Download stats
+                        </Button>
                     </CardText>
                 </Card>
-                <PipelineGroups
-                    pipelineGroups={this.props.discovery.pipelineGroups}
-                    discoveryId={this.props.discovery.id}
-                />
+                {hasIris && inputData.iris.map(i => this.renderDiscoveryCard(i, discoveries))}
+                {csv &&
+                    <Card>
+                        <CardText>
+                            <pre>
+                                {csv}
+                            </pre>
+                        </CardText>
+                    </Card>
+                }
             </Layout>
         )
     }
@@ -64,15 +112,18 @@ MultiRunnerPage.propTypes = {
 }
 
 const mapStateToProps = state => ({
-    inputListIri: state.inputListIri
+    inputData: state.inputData,
+    discoveries: state.discoveries,
+    multirunnerStatus: state.multirunnerStatus,
+    csv: state.csv,
 })
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
     return {
-        handleDiscoveryStart: (activeComponentUris) => dispatch(handleDiscoveryStart(activeComponentUris)),
-        persistState: (state) => dispatch(persistState(state)),
-        handleDiscoveryStartWithInput: (input) => dispatch(handleDiscoveryStartWithInput(input)),
-        handleDiscoveryStartWithInputIri: (inputIri) => dispatch(handleDiscoveryStartWithInputIri(inputIri)),
+        getInputsFromIri: iri => dispatch(getInputsFromIri(iri)),
+        getInputs: list => dispatch(getInputs(list)),
+        goToDetail: id => dispatch(goToDetail(id)),
+        getStats: discoveries => dispatch(getStats(discoveries)),
     }
 }
 

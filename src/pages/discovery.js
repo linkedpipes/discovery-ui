@@ -16,13 +16,6 @@ import { persistState, checkDiscoveryStatus } from '../actions/actions'
 class DiscoveryPage extends React.Component {
 
     componentDidMount() {
-/*
-         else if (this.props.inputData.iri) {
-            this.props.handleDiscoveryStartWithInputIri(this.props.inputData.iri)
-        } else if (this.props.inputData.rdf) {
-            this.props.handleDiscoveryStartWithInput(this.props.inputData.rdf)
-        }*/
-
         this.props.getDiscoveryStatus(this.props.url.query.id)
     }
 

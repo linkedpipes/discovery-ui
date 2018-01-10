@@ -4,14 +4,17 @@ import { assocPath, values, compose, reduce } from 'ramda'
 
 const defaultState = {
     backendStatus: { isOnline: null },
-    inputData : {
+    inputData: {
         iri: null,
         listIri: null,
+        list: null,
         rdf: null,
         components: {},
+        iris: null,
     },
     discoveries: {},
     persisted: false,
+    multirunnerStatus: {}
 }
 
 const discovery = {
@@ -27,7 +30,9 @@ const discovery = {
 export const reducer = (state = defaultState, action) => {
     switch (action.type) {
         case 'DISCOVERY_STARTED':
-            return assocPath(['discoveries', action.payload.id], { ...discovery, id: action.payload.id }, state)
+            var payload = { ...discovery, id: action.payload.id, inputIri: action.payload.inputIri };
+            var a = assocPath(['discoveries', action.payload.id], payload, state);
+            return assocPath(['discoveries', action.payload.inputIri], action.payload.id, a);
         case 'DISCOVERY_STATUS_UPDATED':
             var sx = state
             if (!state.discoveries[action.payload.id])
@@ -68,6 +73,14 @@ export const reducer = (state = defaultState, action) => {
             return assocPath(['inputData', 'listIri'], action.payload.iri, state)
         case 'STATE_PERSISTED':
             return assocPath(['persisted'], true, state)
+        case 'LIST_CHANGED':
+            return assocPath(['inputData', 'list'], action.payload.list, state)
+        case 'INPUT_IRIS_OBTAINED':
+            return assocPath(['inputData', 'iris'], action.payload.inputIris, state)
+        case 'MULTIRUNNER_PROGRESS':
+            return assocPath(['multirunnerStatus'], action.payload, state)
+        case 'STATS_RECEIVED':
+            return assocPath(['csv'], action.payload.text, state)
     default:
         return state
     }
