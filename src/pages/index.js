@@ -6,11 +6,11 @@ import CardText from 'react-md/lib/Cards/CardText'
 import CardActions from 'react-md/lib/Cards/CardActions'
 import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
+import PropTypes from 'prop-types'
 import DiscoveryInput from '../components/discoveryInput'
 import { initStore } from '../stores/discoveryStore'
-import { fetchBackendStatus, toggleDiscoveryInputItem } from '../actions/actions'
+import { fetchBackendStatus, toggleDiscoveryInputItem, handleComponentsSelection } from '../actions/actions'
 import Layout from '../components/layout'
-import Link from 'next/link'
 import BackendStatus from '../components/backendStatus'
 
 
@@ -25,7 +25,7 @@ class IndexPage extends React.Component {
             <Layout>
                 {(this.props.backendStatus.isOnline === false) && <BackendStatus /> }
 
-                {(Object.keys(this.props.components).length > 0) ?
+                {this.props.backendStatus.isOnline && ((Object.keys(this.props.components).length > 0) ?
                     <Card>
                         <CardTitle
                             title="Start discovery"
@@ -40,34 +40,37 @@ class IndexPage extends React.Component {
                             </form>
                         </CardText>
                         <CardActions>
-                            <Link href="/discovery">
-                                <Button raised primary label="Discover"/>
-                            </Link>
+                            <Button raised primary onClick={() => this.props.handleComponentsSelection(this.props.components)}>
+                                Discover
+                            </Button>
                         </CardActions>
                     </Card> :
-                    <CircularProgress key="progress" id="discovery_progress" />
-                }
+                    <div>
+                        <CircularProgress key="progress" id="discovery_progress"/>
+                    </div>
+                )}
             </Layout>
         )
     }
 }
 
 IndexPage.propTypes = {
-    backendStatus: React.PropTypes.object.isRequired,
-    components: React.PropTypes.object.isRequired
+    backendStatus: PropTypes.object.isRequired,
+    components: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = state => {
     return {
-        components: state.components,
-        backendStatus: state.backendStatus
+        components: state.inputData.components,
+        backendStatus: state.backendStatus,
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
         handleServerStatusPrompt: () => dispatch(fetchBackendStatus()),
-        handleToggleDiscoveryInputItem: (iri, active, count) => dispatch(toggleDiscoveryInputItem(iri, active, count))
+        handleToggleDiscoveryInputItem: (iri, active, count) => dispatch(toggleDiscoveryInputItem(iri, active, count)),
+        handleComponentsSelection: (components) => dispatch(handleComponentsSelection(components)),
     }
 }
 

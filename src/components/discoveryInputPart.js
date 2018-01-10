@@ -10,9 +10,9 @@ import { map, compose, values } from 'ramda';
 
 const renderRows = compose(
     map(row => (
-        <TableRow key={row.uri}>
+        <TableRow key={row.iri}>
             <TableColumn>{row.label}</TableColumn>
-            <TableColumn>{row.uri}</TableColumn>
+            <TableColumn>{row.iri}</TableColumn>
         </TableRow>
     ))
 )
@@ -24,7 +24,7 @@ const DiscoveryInputPart = (props) => (
             baseId={props.componentType}
             onRowToggle={(index, isActive, count) => {
                 return props.toggleDiscoveryInputItem(
-                    props.components[index-1] ? props.components[index-1].uri : null,
+                    props.components[index-1] ? props.components[index-1].iri : null,
                     isActive,
                     props.componentType,
                     count,
@@ -34,7 +34,7 @@ const DiscoveryInputPart = (props) => (
             <TableHeader>
                 <TableRow>
                     <TableColumn>Label</TableColumn>
-                    <TableColumn>Uri</TableColumn>
+                    <TableColumn>Iri</TableColumn>
                 </TableRow>
             </TableHeader>
             <TableBody>

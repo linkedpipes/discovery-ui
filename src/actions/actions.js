@@ -1,31 +1,73 @@
 import fetch from 'isomorphic-fetch'
+import { values, compose, map, filter, mergeAll } from 'ramda'
+import Router from 'next/router'
+import multirunner from '../pages/multirunner';
 
+export const onComponentsFetched = components => ({type: 'COMPONENTS_FETCHED', payload: {components}})
 
-export const onComponentsFetched = components => ({ type: 'COMPONENTS_FETCHED', components })
+export const onDiscoveryStartSuccess = ({ id }, multirunnerData) => dispatch => {
+    if(!multirunnerData)
+    {
+        Router.push({ pathname: '/discovery', query: { id } })
+    } else {
+        dispatch(checkDiscoveryStatus(id, multirunnerData))
+    }
+    return dispatch({ type: 'DISCOVERY_STARTED', payload: { id, inputIri: multirunnerData.inputIris[multirunnerData.current] } })
+}
 
-export const onDiscoveryStartSuccess = ({ id }) => ({ type: 'DISCOVERY_STARTED', id })
+export const goToDetail = (id) => dispatch => {
+    Router.push({ pathname: '/discovery', query: { id } })
+}
 
-export const onDiscoveryStartFailed = () => ({ type: 'DISCOVERY_START_FAILED', id })
+export const onDiscoveryStartFailed = (id) => ({type: 'DISCOVERY_START_FAILED', payload: {id}})
 
-export const onDiscoveryFinished = () => ({ type: 'DISCOVERY_FINISHED' })
+export const onDiscoveryFinished = (id, multirunnerData) => dispatch => {
+    if(multirunnerData){
+        dispatch(runMultiple(multirunnerData.current+1, multirunnerData.inputIris))
+    }
+    return dispatch({type: 'DISCOVERY_FINISHED', payload: {id}})
+}
 
-export const onDiscoveryStatusUpdated = status => ({ type: 'DISCOVERY_STATUS_UPDATED', status })
+export const onDiscoveryStatusUpdated = (id, status) => ({type: 'DISCOVERY_STATUS_UPDATED', payload: {id, status}})
 
-export const onPipelineGroupsUpdated = pipelineGroups => ({ type: 'PIPELINE_GROUPS_UPDATED', pipelineGroups })
+export const onPipelineGroupsUpdated = (id, pipelineGroups) => ({type: 'PIPELINE_GROUPS_UPDATED', payload: {id, pipelineGroups}})
 
-export const onBackendStatusFetched = isOnline => ({ type: 'BACKEND_STATUS_UPDATED', isOnline })
+export const onBackendStatusFetched = isOnline => ({type: 'BACKEND_STATUS_UPDATED', payload: {isOnline}})
 
-export const onComponentsFetchError = () => ({ type: 'COMPONENTS_FETCH_ERROR' })
+export const onComponentsFetchError = () => ({type: 'COMPONENTS_FETCH_ERROR'})
 
-export const onPipelineExecutionFailed = (executionIri, pipelineId) => ({ type: 'PIPELINE_EXECUTION_FAILED', payload: {executionIri, pipelineId} })
+export const onPipelineExecutionFailed = (executionIri, pipelineId) => ({
+    type: 'PIPELINE_EXECUTION_FAILED',
+    payload: {executionIri, pipelineId}
+})
 
-export const onPipelineExecutionFinished = (executionIri, pipelineId) => ({ type: 'PIPELINE_EXECUTION_FINISHED', payload: {executionIri, pipelineId} })
+export const onPipelineExecutionFinished = (executionIri, pipelineId) => ({
+    type: 'PIPELINE_EXECUTION_FINISHED',
+    payload: {executionIri, pipelineId}
+})
 
-export const onStatePersisted = (discoveryId) => ({ type: 'STATE_PERSISTED', payload: { discoveryId } })
+export const onStatePersisted = (discoveryId) => ({type: 'STATE_PERSISTED', payload: {discoveryId}})
+
+export const onStatsReceived = (text) => dispatch => dispatch({type: 'STATS_RECEIVED', payload: {text}})
+
+export const runMultiple = (current, inputIris) => dispatch => {
+    if(current < inputIris.length) {
+        dispatch(handleDiscoveryStartWithInputIri(inputIris[current], { current, inputIris }))
+        return dispatch({ type: 'MULTIRUNNER_PROGRESS', payload: { current, inputIris } });
+    }
+}
+
+export const onInputIrisObtained = inputIris => dispatch => {
+    if(inputIris && inputIris.length)
+    {
+        dispatch(runMultiple(0, inputIris))
+    }
+    return dispatch({ type: 'INPUT_IRIS_OBTAINED', payload: { inputIris } });
+}
 
 export const onPipelineExported = exportData => dispatch => {
     dispatch(fetchExecutionStatus(exportData.etlExecutionIri, exportData.pipelineId))
-    return dispatch({ type: 'PIPELINE_EXPORTED', payload: exportData });
+    return dispatch({type: 'PIPELINE_EXPORTED', payload: exportData});
 }
 
 const fetchExecutionStatus = (iri, pipelineId) => dispatch => {
@@ -33,24 +75,23 @@ const fetchExecutionStatus = (iri, pipelineId) => dispatch => {
         (success) => {
             success.json().then(
                 json => dispatch(onExecutionStatusFetched(json, iri, pipelineId)),
-                error => {},
+                error => {
+                },
             )
         },
-        error => {},
+        error => {
+        },
     )
 }
 
 export const onExecutionStatusFetched = (status, executionIri, pipelineId) => dispatch => {
-    if(status.isQueued || status.isRunning)
-    {
-        window.setTimeout(() =>  dispatch(fetchExecutionStatus(executionIri, pipelineId)), 1000)
+    if (status.isQueued || status.isRunning) {
+        window.setTimeout(() => dispatch(fetchExecutionStatus(executionIri, pipelineId)), 1000)
     }
-    else if(status.isFinished)
-    {
+    else if (status.isFinished) {
         dispatch(onPipelineExecutionFinished(executionIri, pipelineId))
     }
-    else if(status.isFailed)
-    {
+    else if (status.isFailed) {
         dispatch(onPipelineExecutionFailed(executionIri, pipelineId))
     }
 }
@@ -66,6 +107,10 @@ export const toggleDiscoveryInputItem = (iri, isActive, componentType, count) =>
 export const setInputIri = iri => ({ type: 'INPUT_IRI_CHANGED', payload: { iri } })
 
 export const setInput = input => ({ type: 'INPUT_CHANGED', payload: { input } })
+
+export const setListIri = iri => ({ type: 'LIST_IRI_CHANGED', payload: { iri } })
+
+export const setList = list => ({ type: 'LIST_CHANGED', payload: { list } })
 
 export function fetchBackendStatus() {
     return dispatch => {
@@ -91,60 +136,137 @@ export function fetchBackendStatus() {
     }
 }
 
+export function handleComponentsSelection(components) {
+    const activeComponentIris = compose(
+        map(c => c.iri),
+        filter(c => c.isActive),
+        values,
+        mergeAll,
+        values,
+    )(components)
+
+    return handleDiscoveryStart(activeComponentIris)
+}
+
 export function persistState(state) {
     return dispatch => {
         return fetch(`${BACKEND_URL}/persist`, {
             method: 'POST',
-            headers: new Headers({ 'content-type': 'application/json' }),
+            headers: new Headers({'content-type': 'application/json'}),
             body: JSON.stringify(state),
         }).then(
             (success) => {
                 return success.json().then(
                     json => dispatch(onStatePersisted(state.discovery.id)),
+                    error => dispatch(() => {
+                    }),
+                ).then(
+                    action => dispatch(() => {
+                    }),
+                )
+            },
+            error => dispatch(() => {
+            }),
+        )
+    }
+}
+
+export function getStats(discoveries) {
+    return dispatch => {    
+        const data = compose(
+            values,
+            map(d => ({ inputIri: d.inputIri, id: d.id })),
+            filter(d => typeof d === 'object')
+        )(discoveries)
+
+        return fetch(`${BACKEND_URL}/getStats`, {
+            method: 'POST',
+            headers: new Headers({'content-type': 'application/json'}),
+            body: JSON.stringify(data),
+        }).then(
+            (success) => {
+                return success.text().then(
+                    text => dispatch(onStatsReceived(text)),
+                    error => dispatch(() => {
+                    }),
+                ).then(
+                    action => dispatch(() => {
+                    }),
+                )
+            },
+            error => dispatch(() => {
+            }),
+        )
+    }
+}
+
+export function getInputsFromIri(iri){
+    return dispatch => {
+        return fetch(`${BACKEND_URL}/discovery/getExperimentsInputIrisFromIri?iri=${iri}`, {
+            method: 'GET',
+        }).then(
+            (success) => {
+                return success.json().then(
+                    json => dispatch(onInputIrisObtained(json.inputIris)),
+                    error => dispatch(() => {}),
+                )
+            },
+            error => dispatch(() => {}),
+        )
+    };
+}
+
+export function getInputs(list){
+    return dispatch => {
+        return fetch(`${BACKEND_URL}/discovery/getExperimentsInputIris`, {
+            method: 'POST',
+            headers: new Headers({'content-type': 'text/plain'}),
+            body: list,
+        }).then(
+            (success) => {
+                return success.json().then(
+                    json => dispatch(onInputIrisObtained(json.inputIris)),
                     error => dispatch(() => {}),
                 ).then(
                     action => dispatch(() => {}),
                 )
             },
-            error => dispatch(() => {}),
+            error => dispatch(() => {
+            }),
         )
-    }
+    };
 }
 
 export function handleDiscoveryStart(activeComponentUris) {
     return dispatch => {
         return fetch(`${BACKEND_URL}/discovery/start`, {
             method: 'POST',
-            headers: new Headers({ 'content-type': 'application/json' }),
+            headers: new Headers({'content-type': 'application/json'}),
             body: JSON.stringify(activeComponentUris),
         }).then(
             (success) => {
                 return success.json().then(
                     json => dispatch(onDiscoveryStartSuccess(json)),
                     error => dispatch(onDiscoveryStartFailed()),
-                ).then(
-                    action => dispatch(checkDiscoveryStatus(action.id)),
                 )
             },
-            error => dispatch(onDiscoveryStartFailed()),
+            error => dispatch(onDiscoveryStartFailed(action.payload.id)),
         )
     }
 }
 
-export function handleDiscoveryStartWithInputIri(inputIri) {
+export function handleDiscoveryStartWithInputIri(inputIri, multirunnerData = null) {
     return dispatch => {
         return fetch(`${BACKEND_URL}/discovery/startFromInputIri?iri=${inputIri}`, {
             method: 'GET',
         }).then(
             (success) => {
                 return success.json().then(
-                    json => dispatch(onDiscoveryStartSuccess(json)),
-                    error => dispatch(onDiscoveryStartFailed()),
-                ).then(
-                    action => dispatch(checkDiscoveryStatus(action.id)),
+                    json => dispatch(onDiscoveryStartSuccess(json, multirunnerData)),
+                    error => dispatch(onDiscoveryStartFailed(action.payload.id)),
                 )
             },
-            error => dispatch(onDiscoveryStartFailed()),
+            error => dispatch(onDiscoveryStartFailed(action.payload.id)),
         )
     }
 }
@@ -153,15 +275,13 @@ export function handleDiscoveryStartWithInput(input) {
     return dispatch => {
         return fetch(`${BACKEND_URL}/discovery/startFromInput`, {
             method: 'POST',
-            headers: new Headers({ 'content-type': 'text/plain' }),
+            headers: new Headers({'content-type': 'text/plain'}),
             body: input,
         }).then(
             (success) => {
                 return success.json().then(
                     json => dispatch(onDiscoveryStartSuccess(json)),
                     error => dispatch(onDiscoveryStartFailed()),
-                ).then(
-                    action => dispatch(checkDiscoveryStatus(action.id)),
                 )
             },
             error => dispatch(onDiscoveryStartFailed()),
@@ -169,26 +289,25 @@ export function handleDiscoveryStartWithInput(input) {
     }
 }
 
-const checkDiscoveryStatus = (id) => {
+export const checkDiscoveryStatus = (id, multirunnerData) => {
     return dispatch => {
         return fetch(`${BACKEND_URL}/discovery/${id}`, {
             method: 'GET',
         }).then(
             (success) => {
                 return success.json().then(
-                    newStatus => dispatch(onDiscoveryStatusUpdated(newStatus)),
+                    newStatus => dispatch(onDiscoveryStatusUpdated(id, newStatus)),
                     error => console.log(error),
                 )
             },
             error => console.log(error),
         ).then(
             action => {
-                if (!action.status.isFinished) {
-                    dispatch(updatePipelineGroups(id))
-                    return dispatch(checkDiscoveryStatus(id))
+                dispatch(updatePipelineGroups(id))
+                if (!action.payload.status.isFinished) {
+                    window.setTimeout(() => dispatch(checkDiscoveryStatus(id, multirunnerData)), 1000)
                 } else {
-                    dispatch(updatePipelineGroups(id))
-                    return dispatch(onDiscoveryFinished())
+                    return dispatch(onDiscoveryFinished(id, multirunnerData))
                 }
             },
         )
@@ -202,7 +321,7 @@ const updatePipelineGroups = (id) => {
         }).then(
             (success) => {
                 return success.json().then(
-                    ({ pipelineGroups }) => dispatch(onPipelineGroupsUpdated(pipelineGroups)),
+                    ({pipelineGroups}) => dispatch(onPipelineGroupsUpdated(id, pipelineGroups)),
                     error => console.log(error),
                 )
             },
@@ -218,11 +337,16 @@ export const exportPipeline = (discoveryId, pipelineId) => {
                 json => {
                     return dispatch(onPipelineExported(json))
                 },
-                error => {}
+                error => {
+                }
             ),
-            error => {}
+            error => {
+            }
         )
     }
 }
 
-export const showDataSample = (discoveryId, pipelineId) => ({ type: 'SHOW_DATASAMPLE_CLICKED', payload: { discoveryId, pipelineId } })
+export const showDataSample = (discoveryId, pipelineId) => ({
+    type: 'SHOW_DATASAMPLE_CLICKED',
+    payload: {discoveryId, pipelineId}
+})

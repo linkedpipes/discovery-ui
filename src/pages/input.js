@@ -7,7 +7,7 @@ import CardActions from 'react-md/lib/Cards/CardActions'
 import Button from 'react-md/lib/Buttons/Button'
 import TextField from 'react-md/lib/TextFields';
 import { initStore } from '../stores/discoveryStore'
-import { fetchBackendStatus, setInputIri, setInput } from '../actions/actions'
+import { fetchBackendStatus, setInputIri, setInput, setListIri, setList } from '../actions/actions'
 import Layout from '../components/layout'
 import Link from 'next/link'
 import BackendStatus from '../components/backendStatus'
@@ -50,7 +50,44 @@ class InputPage extends React.Component {
                     </CardText>
                     <CardActions>
                         <Link href="/discovery">
-                            <Button raised primary label="Discover" />
+                            <Button raised primary>
+                                Discover
+                            </Button>
+                        </Link>
+                    </CardActions>
+                </Card>
+
+                <br /><br />
+
+                <Card>
+                    <CardTitle
+                        title="Run multiple discoveries"
+                        subtitle="Provide IRI defining a list of discovery inputs"
+                    />
+                    <CardText>
+                        <form>
+                            <TextField
+                                id="listIri"
+                                label="Discovery list IRI"
+                                lineDirection="center"
+                                placeholder=""
+                                onChange={this.props.handleListIriChange}
+                            />
+
+                            <TextField
+                                id="floating-multiline"
+                                label="Discovery list"
+                                lineDirection="right"
+                                rows={10}
+                                onChange={this.props.handleListChange}
+                            />
+                        </form>
+                    </CardText>
+                    <CardActions>
+                        <Link href="/multirunner">
+                            <Button raised primary>
+                                Run multiple discoveries
+                            </Button>
                         </Link>
                     </CardActions>
                 </Card>
@@ -74,6 +111,8 @@ const mapDispatchToProps = dispatch => {
         handleServerStatusPrompt: () => dispatch(fetchBackendStatus()),
         handleInputIriChange: (iri) => dispatch(setInputIri(iri)),
         handleInputChange: (input) => dispatch(setInput(input)),
+        handleListIriChange: (iri) => dispatch(setListIri(iri)),
+        handleListChange: (list) => dispatch(setList(list))
     }
 }
 

@@ -6,43 +6,51 @@ import OutputDataSamplePreview from '../components/outputDataSamplePreview'
 import { exportPipeline, showDataSample } from '../actions/actions'
 
 
-const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, pipelineData, applicationExecutorIri }) => (
-    <li>
-        <span>Minimal iteration: {dataSampleGroup.minimalIteration}</span>
-        <div>
-            {dataSampleGroup.pipeline.descriptor}
-        </div>
-        <div>
-            {(!pipelineData[dataSampleGroup.pipeline.id] || (!pipelineData[dataSampleGroup.pipeline.id].isRunning && !pipelineData[dataSampleGroup.pipeline.id].isSuccess))  ?
+const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, discoveries, applicationExecutorIri }) => {
+    const pipeline = discoveries[discoveryId].pipelineData[dataSampleGroup.pipeline.id]
+
+    return (
+        <li>
+            <span>Minimal iteration: {dataSampleGroup.minimalIteration}</span>
+            <div>
+                {dataSampleGroup.pipeline.descriptor}
+            </div>
+            <div>
+                {(!pipeline || (!pipeline.isRunning && !pipeline.isSuccess)) &&
+                    <span>
+                        <Button raised onClick={() => exportPipeline(discoveryId, dataSampleGroup.pipeline.id)}>
+                            Run
+                        </Button>
+                    </span>
+                }
+
+                {(pipeline && pipeline.isRunning && !pipeline.isSuccess) &&
+                    <CircularProgress key={`progress_pipeline_${dataSampleGroup.pipeline.id}`} id={`progress_pipeline_${dataSampleGroup.pipeline.id}`} />
+                }
+
+                {
+                    (pipeline && !pipeline.isRunning && pipeline.isSuccess) &&
+                    <a href={`${applicationExecutorIri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/service`} target="_blank">
+                        <Button raised>
+                            Go to app
+                        </Button>
+                    </a>
+                }
+
                 <span>
-                    <Button raised label='Run' onClick={() => exportPipeline(discoveryId, dataSampleGroup.pipeline.id)} />
-                </span> :
-                null
-            }
-
-            {(pipelineData[dataSampleGroup.pipeline.id] && pipelineData[dataSampleGroup.pipeline.id].isRunning && !pipelineData[dataSampleGroup.pipeline.id].isSuccess) ?
-                <CircularProgress key={`progress_pipeline_${dataSampleGroup.pipeline.id}`} id={`progress_pipeline_${dataSampleGroup.pipeline.id}`} /> :
-                null
-            }
-
-            {(pipelineData[dataSampleGroup.pipeline.id] && !pipelineData[dataSampleGroup.pipeline.id].isRunning && pipelineData[dataSampleGroup.pipeline.id].isSuccess) ?
-                <a href={`${applicationExecutorIri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/service`}>
-                    <Button raised label='Go to app'/>
-                </a> :
-                null
-            }
-
-            <span>
                 <OutputDataSamplePreview dataSample={dataSampleGroup.pipeline.dataSample} />
-                <a href={`${applicationExecutorIri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/ods/service`}>
-                    <Button raised label='Show output data sample in app'/>
+                <a href={`${applicationExecutorIri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/ods/service`} target="_blank">
+                    <Button raised>
+                        Show output data sample in app
+                    </Button>
                 </a>
             </span>
-        </div>
-    </li>
-)
+            </div>
+        </li>
+    )
+}
 
-const mapStateToProps = state => ({ pipelineData: state.discovery.pipelineData })
+const mapStateToProps = state => ({ discoveries: state.discoveries })
 
 const mapDispatchToProps = dispatch => {
     return {
