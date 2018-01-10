@@ -10,7 +10,7 @@ import Layout from '../components/layout'
 import PipelineGroups from '../components/pipelineGroups'
 import Button from 'react-md/lib/Buttons/Button'
 import { initStore } from '../stores/discoveryStore'
-import { handleMultirunnerStart, getInputsFromIri, getInputs, goToDetail, getStats } from '../actions/actions'
+import { handleMultirunnerStart, getInputsFromIri, getInputs, goToDetail, requestStats } from '../actions/actions'
 
 
 class MultiRunnerPage extends React.Component {
@@ -88,21 +88,12 @@ class MultiRunnerPage extends React.Component {
                         subtitle={subtitle}
                     />
                     <CardText>
-                        <Button primary raised onClick={() => this.props.getStats(discoveries)}>
+                        <Button primary raised onClick={() => this.props.requestStats(discoveries)}>
                             Download stats
                         </Button>
                     </CardText>
                 </Card>
                 {hasIris && inputData.iris.map(i => this.renderDiscoveryCard(i, discoveries))}
-                {csv &&
-                    <Card>
-                        <CardText>
-                            <pre>
-                                {csv}
-                            </pre>
-                        </CardText>
-                    </Card>
-                }
             </Layout>
         )
     }
@@ -123,7 +114,7 @@ const mapDispatchToProps = (dispatch) => {
         getInputsFromIri: iri => dispatch(getInputsFromIri(iri)),
         getInputs: list => dispatch(getInputs(list)),
         goToDetail: id => dispatch(goToDetail(id)),
-        getStats: discoveries => dispatch(getStats(discoveries)),
+        requestStats: discoveries => dispatch(requestStats(discoveries)),
     }
 }
 

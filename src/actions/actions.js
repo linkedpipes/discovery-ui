@@ -16,7 +16,7 @@ export const onDiscoveryStartSuccess = ({ id }, multirunnerData) => dispatch => 
 }
 
 export const goToDetail = (id) => dispatch => {
-    Router.push({ pathname: '/discovery', query: { id } })
+    Router.push({ pathname: '', query: { id } })
 }
 
 export const onDiscoveryStartFailed = (id) => ({type: 'DISCOVERY_START_FAILED', payload: {id}})
@@ -48,7 +48,9 @@ export const onPipelineExecutionFinished = (executionIri, pipelineId) => ({
 
 export const onStatePersisted = (discoveryId) => ({type: 'STATE_PERSISTED', payload: {discoveryId}})
 
-export const onStatsReceived = (text) => dispatch => dispatch({type: 'STATS_RECEIVED', payload: {text}})
+export const onStatsReceived = ({id}) => dispatch => {
+    window.location.href = `${BACKEND_URL}/getStats?id=${id}`;
+}
 
 export const runMultiple = (current, inputIris) => dispatch => {
     if(current < inputIris.length) {
@@ -171,7 +173,7 @@ export function persistState(state) {
     }
 }
 
-export function getStats(discoveries) {
+export function requestStats(discoveries) {
     return dispatch => {    
         const data = compose(
             values,
@@ -179,14 +181,14 @@ export function getStats(discoveries) {
             filter(d => typeof d === 'object')
         )(discoveries)
 
-        return fetch(`${BACKEND_URL}/getStats`, {
+        return fetch(`${BACKEND_URL}/requestStats`, {
             method: 'POST',
             headers: new Headers({'content-type': 'application/json'}),
             body: JSON.stringify(data),
         }).then(
             (success) => {
-                return success.text().then(
-                    text => dispatch(onStatsReceived(text)),
+                return success.json().then(
+                    json => dispatch(onStatsReceived(json)),
                     error => dispatch(() => {
                     }),
                 ).then(

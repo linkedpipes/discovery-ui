@@ -79,8 +79,6 @@ export const reducer = (state = defaultState, action) => {
             return assocPath(['inputData', 'iris'], action.payload.inputIris, state)
         case 'MULTIRUNNER_PROGRESS':
             return assocPath(['multirunnerStatus'], action.payload, state)
-        case 'STATS_RECEIVED':
-            return assocPath(['csv'], action.payload.text, state)
     default:
         return state
     }
