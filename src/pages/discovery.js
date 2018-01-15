@@ -19,12 +19,22 @@ class DiscoveryPage extends React.Component {
         this.props.getDiscoveryStatus(this.props.url.query.id)
     }
 
+    getStatusMessage(isFinished) {
+        return isFinished ?
+            <span>Done!</span> :
+            <div>
+                Waiting for the discovery to complete.
+                <CircularProgress key="progress" id="discovery_progress"/>
+            </div>
+    }
+
     render() {
-        const discoveryId = this.props.url.query.id
+        const { url, discoveries, state, persistState, persisted } = this.props;
+        const discoveryId = url.query.id
 
         return (
             <Layout>
-                {this.props.discoveries[discoveryId] &&
+                {discoveries[discoveryId] &&
                     <div>
                         <Card>
                             <CardTitle
@@ -33,33 +43,25 @@ class DiscoveryPage extends React.Component {
                             />
                             <CardText style={{textAlign: 'center'}}>
                                 <div>
-                                    {
-                                        this.props.discoveries[discoveryId].status.isFinished
-                                            ? <span>Done!</span>
-                                            : <div>
-                                                Waiting for the discovery to complete.
-                                                <CircularProgress key="progress" id="discovery_progress"/>
-                                            </div>
-                                    }
+                                    { this.getStatusMessage(discoveries[discoveryId].status.isFinished) }
                                 </div>
                                 <div>
-                                    Discovered {this.props.discoveries[discoveryId].status.pipelineCount} pipeline(s) in
-                                    total.
+                                    Discovered {discoveries[discoveryId].status.pipelineCount} pipeline(s) in total.
                                 </div>
                                 <br/>
-                                <Button raised primary onClick={() => this.props.persistState(this.props.state)}>
+                                <Button raised primary onClick={() => persistState(state)}>
                                     Persist state
                                 </Button>
 
-                                {this.props.persisted &&
-                                <div>
-                                    <TextField value={`${BACKEND_URL}/result/${discoveryId}`} readonly/>
-                                </div>
+                                {persisted &&
+                                    <div>
+                                        <TextField value={`${BACKEND_URL}/result/${discoveryId}`} readonly/>
+                                    </div>
                                 }
                             </CardText>
                         </Card>
                         <PipelineGroups
-                            pipelineGroups={this.props.discoveries[discoveryId].pipelineGroups}
+                            pipelineGroups={discoveries[discoveryId].pipelineGroups}
                             discoveryId={discoveryId}
                         />
                     </div>

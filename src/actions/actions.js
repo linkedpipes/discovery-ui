@@ -16,7 +16,7 @@ export const onDiscoveryStartSuccess = ({ id }, multirunnerData) => dispatch => 
 }
 
 export const goToDetail = (id) => dispatch => {
-    Router.push({ pathname: '', query: { id } })
+    Router.push({ pathname: '/discovery', query: { id } })
 }
 
 export const onDiscoveryStartFailed = (id) => ({type: 'DISCOVERY_START_FAILED', payload: {id}})
