@@ -7,7 +7,7 @@ import CardActions from 'react-md/lib/Cards/CardActions'
 import Button from 'react-md/lib/Buttons/Button'
 import TextField from 'react-md/lib/TextFields';
 import { initStore } from '../stores/discoveryStore'
-import { fetchBackendStatus, setInputIri, setInput, setListIri, setList } from '../actions/actions'
+import { fetchBackendStatus, setInputIri, setInput, setListIri, setList, discover } from '../actions/actions'
 import Layout from '../components/layout'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
@@ -21,9 +21,12 @@ class InputPage extends React.Component {
     }
 
     render() {
+
+        const { backendStatus, handleInputIriChange, handleInputChange, handleListIriChange, handleListChange, discover, inputData } = this.props;
+
         return (
             <Layout>
-                {(this.props.backendStatus.isOnline === false) && <BackendStatus /> }
+                {(backendStatus.isOnline === false) && <BackendStatus /> }
 
                 <Card>
                     <CardTitle
@@ -37,7 +40,7 @@ class InputPage extends React.Component {
                                 label="Discovery input IRI"
                                 lineDirection="center"
                                 placeholder=""
-                                onChange={this.props.handleInputIriChange}
+                                onChange={handleInputIriChange}
                             />
 
                             <TextField
@@ -45,16 +48,14 @@ class InputPage extends React.Component {
                                 label="Discovery input"
                                 lineDirection="right"
                                 rows={10}
-                                onChange={this.props.handleInputChange}
+                                onChange={handleInputChange}
                             />
                         </form>
                     </CardText>
                     <CardActions>
-                        <Link href="/discovery">
-                            <Button raised primary>
-                                Discover
-                            </Button>
-                        </Link>
+                        <Button raised primary onClick={() => discover(inputData)}>
+                            Discover
+                        </Button>
                     </CardActions>
                 </Card>
 
@@ -72,7 +73,7 @@ class InputPage extends React.Component {
                                 label="Discovery list IRI"
                                 lineDirection="center"
                                 placeholder=""
-                                onChange={this.props.handleListIriChange}
+                                onChange={handleListIriChange}
                             />
 
                             <TextField
@@ -80,7 +81,7 @@ class InputPage extends React.Component {
                                 label="Discovery list"
                                 lineDirection="right"
                                 rows={10}
-                                onChange={this.props.handleListChange}
+                                onChange={handleListChange}
                             />
                         </form>
                     </CardText>
@@ -104,6 +105,7 @@ InputPage.propTypes = {
 const mapStateToProps = state => {
     return {
         backendStatus: state.backendStatus,
+        inputData: state.inputData,
     }
 }
 
@@ -113,7 +115,8 @@ const mapDispatchToProps = dispatch => {
         handleInputIriChange: (iri) => dispatch(setInputIri(iri)),
         handleInputChange: (input) => dispatch(setInput(input)),
         handleListIriChange: (iri) => dispatch(setListIri(iri)),
-        handleListChange: (list) => dispatch(setList(list))
+        handleListChange: (list) => dispatch(setList(list)),
+        discover: (inputData) => dispatch(discover(inputData))
     }
 }
 

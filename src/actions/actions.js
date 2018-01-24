@@ -15,6 +15,19 @@ export const onDiscoveryStartSuccess = ({ id }, multirunnerData) => dispatch => 
     return dispatch({ type: 'DISCOVERY_STARTED', payload: { id, inputIri: multirunnerData.inputIris[multirunnerData.current] } })
 }
 
+export const discover = (inputData) => dispatch => {
+    if (inputData.iri)
+    {
+        return dispatch(handleDiscoveryStartWithInputIri(inputData.iri));
+    }
+    if (inputData.rdf)
+    {
+        return dispatch(handleDiscoveryStartWithInput(inputData.rdf));
+    }
+
+    return {}
+}
+
 export const goToDetail = (id) => dispatch => {
     Router.push({ pathname: '/discovery', query: { id } })
 }
