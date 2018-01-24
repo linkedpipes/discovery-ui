@@ -350,6 +350,7 @@ export const exportPipeline = (discoveryId, pipelineId) => {
         return fetch(`${BACKEND_URL}/discovery/${discoveryId}/execute/${pipelineId}`).then(
             success => success.json().then(
                 json => {
+                    json.id = discoveryId;
                     return dispatch(onPipelineExported(json))
                 },
                 error => {
