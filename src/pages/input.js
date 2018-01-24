@@ -10,6 +10,7 @@ import { initStore } from '../stores/discoveryStore'
 import { fetchBackendStatus, setInputIri, setInput, setListIri, setList } from '../actions/actions'
 import Layout from '../components/layout'
 import Link from 'next/link'
+import PropTypes from 'prop-types'
 import BackendStatus from '../components/backendStatus'
 
 
@@ -97,7 +98,7 @@ class InputPage extends React.Component {
 }
 
 InputPage.propTypes = {
-    backendStatus: React.PropTypes.object.isRequired,
+    backendStatus: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = state => {
