@@ -318,7 +318,10 @@ export const checkDiscoveryStatus = (id, multirunnerData) => {
             error => console.log(error),
         ).then(
             action => {
-                dispatch(updatePipelineGroups(id))
+                if (!multirunnerData)
+                {
+                    dispatch(updatePipelineGroups(id))
+                }
                 if (!action.payload.status.isFinished) {
                     window.setTimeout(() => dispatch(checkDiscoveryStatus(id, multirunnerData)), 1000)
                 } else {
