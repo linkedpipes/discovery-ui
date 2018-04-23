@@ -3,7 +3,7 @@ import { values, compose, map, filter, mergeAll } from 'ramda'
 import Router from 'next/router'
 import multirunner from '../pages/multirunner';
 
-export const onComponentsFetched = components => ({type: 'COMPONENTS_FETCHED', payload: {components}})
+export const onComponentsFetched = components => ({ type: 'COMPONENTS_FETCHED', payload: { components } })
 
 export const onDiscoveryStartSuccess = ({ id }, multirunnerData) => dispatch => {
     if(!multirunnerData)
@@ -25,14 +25,14 @@ export const discover = (inputData) => dispatch => {
         return dispatch(handleDiscoveryStartWithInput(inputData.rdf));
     }
 
-    return {}
+    throw new Error("Unexpected input.");
 }
 
 export const goToDetail = (id) => dispatch => {
     Router.push({ pathname: '/discovery', query: { id } })
 }
 
-export const onDiscoveryStartFailed = (id) => ({type: 'DISCOVERY_START_FAILED', payload: {id}})
+export const onDiscoveryStartFailed = (error) => ({type: 'ERROR', payload: { message : `Unable to start discovery: ${error}.`}})
 
 export const onDiscoveryFinished = (id, multirunnerData) => dispatch => {
     if(multirunnerData){
@@ -144,7 +144,6 @@ export function fetchBackendStatus() {
                 return dispatch(onBackendStatusFetched(true))
             },
             _ => {
-                //window.setTimeout(checkBackendStatus, 1000)
                 return dispatch(onBackendStatusFetched(false))
             }
         )
@@ -262,26 +261,27 @@ export function handleDiscoveryStart(activeComponentUris) {
             (success) => {
                 return success.json().then(
                     json => dispatch(onDiscoveryStartSuccess(json)),
-                    error => dispatch(onDiscoveryStartFailed()),
+                    error => dispatch(onDiscoveryStartFailed(error)),
                 )
             },
-            error => dispatch(onDiscoveryStartFailed(action.payload.id)),
+            error => dispatch(onDiscoveryStartFailed(error)),
         )
     }
 }
 
 export function handleDiscoveryStartWithInputIri(inputIri, multirunnerData = null) {
     return dispatch => {
+        dispatch({ type: 'DISCOVERY_BEING_CREATED', payload: {} });
         return fetch(`${BACKEND_URL}/discovery/startFromInputIri?iri=${inputIri}`, {
             method: 'GET',
         }).then(
             (success) => {
                 return success.json().then(
                     json => dispatch(onDiscoveryStartSuccess(json, multirunnerData)),
-                    error => dispatch(onDiscoveryStartFailed(action.payload.id)),
+                    error => dispatch(onDiscoveryStartFailed(error)),
                 )
             },
-            error => dispatch(onDiscoveryStartFailed(action.payload.id)),
+            error => dispatch(onDiscoveryStartFailed(error)),
         )
     }
 }

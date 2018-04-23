@@ -4,14 +4,15 @@ import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
 
 
-const BackendStatus = () => (
+const BackendStatus = ({ status }) => (
+    (status !== true) &&
     <div>
         <Card>
             <CardTitle
-                title="Backend is offline"
+                title="Backend status"
             />
             <CardText>
-                Please, start the discovery server.
+                {status === null ? "Connecting to backend..." : "Please, start the backend server, it seems to be offline."}
             </CardText>
         </Card>
         <br />

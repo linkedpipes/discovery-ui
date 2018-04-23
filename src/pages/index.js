@@ -23,7 +23,8 @@ class IndexPage extends React.Component {
     render() {
         return (
             <Layout>
-                {(this.props.backendStatus.isOnline === false) && <BackendStatus /> }
+
+                <BackendStatus status={backendStatus.isOnline} />
 
                 {this.props.backendStatus.isOnline && ((Object.keys(this.props.components).length > 0) ?
                     <Card>
@@ -46,6 +47,7 @@ class IndexPage extends React.Component {
                         </CardActions>
                     </Card> :
                     <div>
+                        Downloading components ...
                         <CircularProgress key="progress" id="discovery_progress"/>
                     </div>
                 )}

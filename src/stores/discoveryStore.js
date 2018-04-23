@@ -14,7 +14,12 @@ const defaultState = {
     },
     discoveries: {},
     persisted: false,
-    multirunnerStatus: {}
+    multirunnerStatus: {},
+    status: {
+        discovery: {
+            isStarting: false
+        }
+    }
 }
 
 const discovery = {
@@ -32,7 +37,8 @@ export const reducer = (state = defaultState, action) => {
         case 'DISCOVERY_STARTED':
             var payload = { ...discovery, id: action.payload.id, inputIri: action.payload.inputIri };
             var a = assocPath(['discoveries', action.payload.id], payload, state);
-            return assocPath(['discoveries', action.payload.inputIri], action.payload.id, a);
+            var b = assocPath(['status', 'discovery', 'isStarting'], false, a)
+            return assocPath(['discoveries', action.payload.inputIri], action.payload.id, b);
         case 'DISCOVERY_STATUS_UPDATED':
             var sx = state
             if (!state.discoveries[action.payload.id])
@@ -79,6 +85,12 @@ export const reducer = (state = defaultState, action) => {
             return assocPath(['inputData', 'iris'], action.payload.inputIris, state)
         case 'MULTIRUNNER_PROGRESS':
             return assocPath(['multirunnerStatus'], action.payload, state)
+        case 'DISCOVERY_BEING_CREATED':
+            return assocPath(['status'], { discovery: { isStarting: true } }, state)
+        case 'DISCOVERY_BEING_CREATED':
+            return assocPath(['status', 'discovery', 'isStarting'], true, state)
+        case 'ERROR':
+            return assocPath(['status', 'error'], action.payload.message, state)
     default:
         return state
     }
