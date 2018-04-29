@@ -84,6 +84,7 @@ const mapStateToProps = state => ({
     persisted: state.persisted,
     apiStatus: state.apiStatus,
     appStatus: state.appStatus,
+    state: state
 })
 
 const mapDispatchToProps = dispatch => {

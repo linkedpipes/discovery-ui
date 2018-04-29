@@ -66,7 +66,7 @@ export const reducer = (state = defaultState, action) => {
             return assocPath(['inputData', 'list'], action.payload.list, state)
         case 'START_DISCOVERY_FULFILLED':
             var payload = { ...discovery, id: action.payload.id, inputIri: action.payload.inputIri };
-            state = assocPath(['discoveries', action.payload.id], payload, state);
+            state = assocPath(['discoveries', action.payload.id], payload, state)
             state = assocPath(['status', 'discovery', 'isStarting'], false, state)
             return assocPath(['discoveries', action.payload.inputIri], action.payload.id, state);
         case 'UPDATE_DISCOVERY_STATUS_FULFILLED':
@@ -77,19 +77,15 @@ export const reducer = (state = defaultState, action) => {
             return assocPath(['discoveries', action.payload.id, 'status'], action.payload, state)
         case 'UPDATE_PIPELINE_GROUPS_FULFILLED':
             return assocPath(['discoveries', action.payload.id, 'pipelineGroups'], action.payload.pipelineGroups, state)
-
-
-
-
-        case 'PIPELINE_EXPORTED':
+        case 'EXPORT_PIPELINE_FULFILLED':
             const data = { isRunning: true, ...action.payolad }
             return assocPath(['discoveries', action.payload.id, 'pipelineData', action.payload.pipelineId], data, state)
-        case 'PIPELINE_EXECUTION_FAILED':
-            const s = assocPath(['discoveries', action.payload.id, 'pipelineData', action.payload.pipelineId, 'isRunning'], false, state)
-            return assocPath(['discoveries', action.payload.id, 'pipelineData', action.payload.pipelineId, 'isSuccess'], false, s)
         case 'PIPELINE_EXECUTION_FINISHED':
-            const s2 = assocPath(['discoveries', action.payload.id, 'pipelineData', action.payload.pipelineId, 'isRunning'], false, state)
-            return assocPath(['discoveries', action.payload.id, 'pipelineData', action.payload.pipelineId, 'isSuccess'], true, s2)
+            state = assocPath(['discoveries', action.payload.id, 'pipelineData', action.payload.pipelineId, 'isRunning'], false, state)
+            return assocPath(['discoveries', action.payload.id, 'pipelineData', action.payload.pipelineId, 'isSuccess'], true, state)
+        case 'PIPELINE_EXECUTION_FAILED':
+            state = assocPath(['discoveries', action.payload.id, 'pipelineData', action.payload.pipelineId, 'isRunning'], false, state)
+            return assocPath(['discoveries', action.payload.id, 'pipelineData', action.payload.pipelineId, 'isSuccess'], false, state)
         case 'TOGGLE_ITEM':
             const { iri, isActive, componentType } = action
             if (iri !== null) {
@@ -100,10 +96,9 @@ export const reducer = (state = defaultState, action) => {
                 reduce((acc, item) => assocPath(['inputData', 'components', componentType, item.iri, 'isActive'], isActive, acc), state),
                 values,
             )(state.inputData.components[componentType])
-        
-        case 'STATE_PERSISTED':
+        case 'PERSIST_STATE_FULFILLED':
             return assocPath(['persisted'], true, state)
-        case 'INPUT_IRIS_OBTAINED':
+        case 'OBTAIN_INPUT_IRIS_FULFILLED':
             return assocPath(['inputData', 'iris'], action.payload.inputIris, state)
         case 'MULTIRUNNER_PROGRESS':
             return assocPath(['multirunnerStatus'], action.payload, state)
