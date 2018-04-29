@@ -9,24 +9,28 @@ import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import PropTypes from 'prop-types'
 import DiscoveryInput from '../components/discoveryInput'
 import { initStore } from '../stores/discoveryStore'
-import { fetchBackendStatus, toggleDiscoveryInputItem, handleComponentsSelection } from '../actions/actions'
+import { toggleDiscoveryInputItem, handleComponentsSelection, getComponents } from '../actions/actions'
 import Layout from '../components/layout'
-import BackendStatus from '../components/backendStatus'
+import ApiStatus from '../components/apiStatus'
+import AppStatus from '../components/appStatus'
 
 
 class IndexPage extends React.Component {
 
     componentDidMount() {
-        this.props.handleServerStatusPrompt()
+        this.props.getComponents()
     }
 
     render() {
+
+        const { apiStatus, appStatus, components, handleToggleDiscoveryInputItem, handleComponentsSelection } = this.props;
+
         return (
             <Layout>
+                <ApiStatus status={apiStatus} />
+                <AppStatus status={appStatus} />
 
-                <BackendStatus status={backendStatus.isOnline} />
-
-                {this.props.backendStatus.isOnline && ((Object.keys(this.props.components).length > 0) ?
+                {apiStatus.isOnline && ((Object.keys(components).length > 0) &&
                     <Card>
                         <CardTitle
                             title="Start discovery"
@@ -35,21 +39,17 @@ class IndexPage extends React.Component {
                         <CardText>
                             <form>
                                 <DiscoveryInput
-                                    components={this.props.components}
-                                    toggleDiscoveryInputItem={this.props.handleToggleDiscoveryInputItem}
+                                    components={components}
+                                    toggleDiscoveryInputItem={handleToggleDiscoveryInputItem}
                                 />
                             </form>
                         </CardText>
                         <CardActions>
-                            <Button raised primary onClick={() => this.props.handleComponentsSelection(this.props.components)}>
+                            <Button raised primary onClick={() => handleComponentsSelection(components)}>
                                 Discover
                             </Button>
                         </CardActions>
-                    </Card> :
-                    <div>
-                        Downloading components ...
-                        <CircularProgress key="progress" id="discovery_progress"/>
-                    </div>
+                    </Card>
                 )}
             </Layout>
         )
@@ -57,20 +57,21 @@ class IndexPage extends React.Component {
 }
 
 IndexPage.propTypes = {
-    backendStatus: PropTypes.object.isRequired,
+    apiStatus: PropTypes.object.isRequired,
     components: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = state => {
     return {
         components: state.inputData.components,
-        backendStatus: state.backendStatus,
+        apiStatus: state.apiStatus,
+        appStatus: state.appStatus,
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        handleServerStatusPrompt: () => dispatch(fetchBackendStatus()),
+        getComponents: () => dispatch(getComponents()),
         handleToggleDiscoveryInputItem: (iri, active, count) => dispatch(toggleDiscoveryInputItem(iri, active, count)),
         handleComponentsSelection: (components) => dispatch(handleComponentsSelection(components)),
     }

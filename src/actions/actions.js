@@ -1,18 +1,53 @@
 import fetch from 'isomorphic-fetch'
 import { values, compose, map, filter, mergeAll } from 'ramda'
 import Router from 'next/router'
-import multirunner from '../pages/multirunner';
 
-export const onComponentsFetched = components => ({ type: 'COMPONENTS_FETCHED', payload: { components } })
-
-export const onDiscoveryStartSuccess = ({ id }, multirunnerData) => dispatch => {
-    if(!multirunnerData)
-    {
-        Router.push({ pathname: '/discovery', query: { id } })
-    } else {
-        dispatch(checkDiscoveryStatus(id, multirunnerData))
+function handleFetchJsonResponse(response) {
+    if (!response.ok) {
+        return { error: { message: `${response.url} (${response.status} - ${response.statusText}) ${response.body}` } }
     }
-    return dispatch({ type: 'DISCOVERY_STARTED', payload: { id, inputIri: multirunnerData.inputIris[multirunnerData.current] } })
+    return response.json().catch(e => { jsonError: e })
+}
+
+const getJson = (url) => fetch(`${BACKEND_URL}${url}`).then(handleFetchJsonResponse)
+
+function postJson(url, data) {
+    return fetch(`${BACKEND_URL}${url}`, {
+        method: 'POST',
+        headers: new Headers({'content-type': 'application/json'}),
+        body: JSON.stringify(data),
+    }).then(handleFetchJsonResponse)
+}
+
+function postText(url, data) {
+    return fetch(`${BACKEND_URL}${url}`, {
+        method: 'POST',
+        headers: new Headers({'content-type': 'text/plain'}),
+        body: data,
+    }).then(handleFetchJsonResponse)
+}
+
+export const getComponents = () => dispatch => dispatch({ type: 'LIST_COMPONENTS', payload: getJson('/discovery/components') })
+
+export const setInputIri = iri => ({ type: 'INPUT_IRI_CHANGED', payload: { iri } })
+
+export const setInput = input => ({ type: 'INPUT_CHANGED', payload: { input } })
+
+export const setListIri = iri => ({ type: 'LIST_IRI_CHANGED', payload: { iri } })
+
+export const setList = list => ({ type: 'LIST_CHANGED', payload: { list } })
+
+export const handleDiscoveryStartWithInputIri = (inputIri, multirunnerData = null) => {
+    return dispatch => dispatch({
+        type: 'START_DISCOVERY',
+        payload: getJson(`/discovery/startFromInputIri?iri=${inputIri}`)
+    }).then(({ value, action }) => {
+        return dispatch(onDiscoveryStartSuccess(value, multirunnerData))
+    })
+}
+
+export const handleDiscoveryStartWithInput = (input) => {
+    return dispatch => dispatch({ type: 'START_DISCOVERY', payload: postText('/discovery/startFromInput', input) })
 }
 
 export const discover = (inputData) => dispatch => {
@@ -28,24 +63,55 @@ export const discover = (inputData) => dispatch => {
     throw new Error("Unexpected input.");
 }
 
+export const onDiscoveryStartSuccess = ({ id }, multirunnerData) => dispatch => {
+    if(!multirunnerData)
+    {
+        Router.push({ pathname: '/discovery', query: { id } })
+    } else {
+        return dispatch(checkDiscoveryStatus(id, multirunnerData))
+    }
+}
+
+export const checkDiscoveryStatus = (id, multirunnerData) => {
+    return dispatch => dispatch({
+        type: 'UPDATE_DISCOVERY_STATUS',
+        payload: getJson(`/discovery/${id}`).then(d => ({ ...d, id }) )  
+    }).then (({value, action}) => {
+        if (!value.isFinished) {
+            window.setTimeout(() => dispatch(checkDiscoveryStatus(id, multirunnerData)), 1000)
+        } else {
+            if (!multirunnerData)
+            {
+                dispatch(updatePipelineGroups(id))
+            }
+            return dispatch(onDiscoveryFinished(id, multirunnerData))
+        }
+    })
+}
+
+export const onDiscoveryFinished = (id, multirunnerData) => dispatch => {
+    if (multirunnerData)
+    {
+        dispatch(runMultiple(multirunnerData.current+1, multirunnerData.inputIris))
+    }
+    return dispatch({ type: 'DISCOVERY_FINISHED', payload: {id} })
+}
+
+const updatePipelineGroups = (id) => {
+    return dispatch => dispatch({
+        type: 'UPDATE_PIPELINE_GROUPS',
+        payload: getJson(`/discovery/${id}/pipeline-groups`).then(d => ({ ...d, id }) )  
+    })
+}
+
+/*
+
 export const goToDetail = (id) => dispatch => {
     Router.push({ pathname: '/discovery', query: { id } })
 }
 
-export const onDiscoveryStartFailed = (error) => ({type: 'ERROR', payload: { message : `Unable to start discovery: ${error}.`}})
-
-export const onDiscoveryFinished = (id, multirunnerData) => dispatch => {
-    if(multirunnerData){
-        dispatch(runMultiple(multirunnerData.current+1, multirunnerData.inputIris))
-    }
-    return dispatch({type: 'DISCOVERY_FINISHED', payload: {id}})
-}
-
-export const onDiscoveryStatusUpdated = (id, status) => ({type: 'DISCOVERY_STATUS_UPDATED', payload: {id, status}})
 
 export const onPipelineGroupsUpdated = (id, pipelineGroups) => ({type: 'PIPELINE_GROUPS_UPDATED', payload: {id, pipelineGroups}})
-
-export const onBackendStatusFetched = isOnline => ({type: 'BACKEND_STATUS_UPDATED', payload: {isOnline}})
 
 export const onComponentsFetchError = () => ({type: 'COMPONENTS_FETCH_ERROR'})
 
@@ -58,12 +124,6 @@ export const onPipelineExecutionFinished = (executionIri, pipelineId) => ({
     type: 'PIPELINE_EXECUTION_FINISHED',
     payload: {executionIri, pipelineId}
 })
-
-export const onStatePersisted = (discoveryId) => ({type: 'STATE_PERSISTED', payload: {discoveryId}})
-
-export const onStatsReceived = ({id}) => dispatch => {
-    window.location.href = `${BACKEND_URL}/getStats?id=${id}`;
-}
 
 export const runMultiple = (current, inputIris) => dispatch => {
     if(current < inputIris.length) {
@@ -119,37 +179,6 @@ export const toggleDiscoveryInputItem = (iri, isActive, componentType, count) =>
     count,
 })
 
-export const setInputIri = iri => ({ type: 'INPUT_IRI_CHANGED', payload: { iri } })
-
-export const setInput = input => ({ type: 'INPUT_CHANGED', payload: { input } })
-
-export const setListIri = iri => ({ type: 'LIST_IRI_CHANGED', payload: { iri } })
-
-export const setList = list => ({ type: 'LIST_CHANGED', payload: { list } })
-
-export function fetchBackendStatus() {
-    return dispatch => {
-        return fetch(`${BACKEND_URL}/status`).then(
-            _ => {
-                fetch(`${BACKEND_URL}/discovery/components`).then(
-                    (success) => {
-                        success.json().then(
-                            json => dispatch(onComponentsFetched(json)),
-                            error => dispatch(onComponentsFetchError()),
-                        )
-                    },
-                    error => dispatch(onComponentsFetchError()),
-                )
-
-                return dispatch(onBackendStatusFetched(true))
-            },
-            _ => {
-                return dispatch(onBackendStatusFetched(false))
-            }
-        )
-    }
-}
-
 export function handleComponentsSelection(components) {
     const activeComponentIris = compose(
         map(c => c.iri),
@@ -163,26 +192,7 @@ export function handleComponentsSelection(components) {
 }
 
 export function persistState(state) {
-    return dispatch => {
-        return fetch(`${BACKEND_URL}/persist`, {
-            method: 'POST',
-            headers: new Headers({'content-type': 'application/json'}),
-            body: JSON.stringify(state),
-        }).then(
-            (success) => {
-                return success.json().then(
-                    json => dispatch(onStatePersisted(state.discovery.id)),
-                    error => dispatch(() => {
-                    }),
-                ).then(
-                    action => dispatch(() => {
-                    }),
-                )
-            },
-            error => dispatch(() => {
-            }),
-        )
-    }
+    return dispatch => dispatch({ type: 'PERSIST_STATE', payload: postJson('/persist', state)})
 }
 
 export function requestStats(discoveries) {
@@ -192,180 +202,31 @@ export function requestStats(discoveries) {
             map(d => ({ inputIri: d.inputIri, id: d.id })),
             filter(d => typeof d === 'object')
         )(discoveries)
-
-        return fetch(`${BACKEND_URL}/requestStats`, {
-            method: 'POST',
-            headers: new Headers({'content-type': 'application/json'}),
-            body: JSON.stringify(data),
-        }).then(
-            (success) => {
-                return success.json().then(
-                    json => dispatch(onStatsReceived(json)),
-                    error => dispatch(() => {
-                    }),
-                ).then(
-                    action => dispatch(() => {
-                    }),
-                )
-            },
-            error => dispatch(() => {
-            }),
-        )
+        
+        return postJson('/requestStats', data).then(r => window.location.href = `${BACKEND_URL}/getStats?id=${id}`)
     }
 }
 
-export function getInputsFromIri(iri){
-    return dispatch => {
-        return fetch(`${BACKEND_URL}/discovery/getExperimentsInputIrisFromIri?iri=${iri}`, {
-            method: 'GET',
-        }).then(
-            (success) => {
-                return success.json().then(
-                    json => dispatch(onInputIrisObtained(json.inputIris)),
-                    error => dispatch(() => {}),
-                )
-            },
-            error => dispatch(() => {}),
-        )
-    };
+export function getInputsFromIri(iri) {
+    // onInputIrisObtained
+    return dispatch => dispatch({ type: 'OBTAIN_INPUT_IRIS', payload: getJsonPromise(`/discovery/getExperimentsInputIrisFromIri?iri=${iri}`)})
 }
 
-export function getInputs(list){
-    return dispatch => {
-        return fetch(`${BACKEND_URL}/discovery/getExperimentsInputIris`, {
-            method: 'POST',
-            headers: new Headers({'content-type': 'text/plain'}),
-            body: list,
-        }).then(
-            (success) => {
-                return success.json().then(
-                    json => dispatch(onInputIrisObtained(json.inputIris)),
-                    error => dispatch(() => {}),
-                ).then(
-                    action => dispatch(() => {}),
-                )
-            },
-            error => dispatch(() => {
-            }),
-        )
-    };
+export function getInputs(list) {
+    // onInputIrisObtained
+    return dispatch => dispatch({ type: 'OBTAIN_INPUT_IRIS', payload: postText('/discovery/getExperimentsInputIris', list) })
 }
 
 export function handleDiscoveryStart(activeComponentUris) {
-    return dispatch => {
-        return fetch(`${BACKEND_URL}/discovery/start`, {
-            method: 'POST',
-            headers: new Headers({'content-type': 'application/json'}),
-            body: JSON.stringify(activeComponentUris),
-        }).then(
-            (success) => {
-                return success.json().then(
-                    json => dispatch(onDiscoveryStartSuccess(json)),
-                    error => dispatch(onDiscoveryStartFailed(error)),
-                )
-            },
-            error => dispatch(onDiscoveryStartFailed(error)),
-        )
-    }
-}
-
-export function handleDiscoveryStartWithInputIri(inputIri, multirunnerData = null) {
-    return dispatch => {
-        dispatch({ type: 'DISCOVERY_BEING_CREATED', payload: {} });
-        return fetch(`${BACKEND_URL}/discovery/startFromInputIri?iri=${inputIri}`, {
-            method: 'GET',
-        }).then(
-            (success) => {
-                return success.json().then(
-                    json => dispatch(onDiscoveryStartSuccess(json, multirunnerData)),
-                    error => dispatch(onDiscoveryStartFailed(error)),
-                )
-            },
-            error => dispatch(onDiscoveryStartFailed(error)),
-        )
-    }
-}
-
-export function handleDiscoveryStartWithInput(input) {
-    return dispatch => {
-        return fetch(`${BACKEND_URL}/discovery/startFromInput`, {
-            method: 'POST',
-            headers: new Headers({'content-type': 'text/plain'}),
-            body: input,
-        }).then(
-            (success) => {
-                return success.json().then(
-                    json => dispatch(onDiscoveryStartSuccess(json)),
-                    error => dispatch(onDiscoveryStartFailed()),
-                )
-            },
-            error => dispatch(onDiscoveryStartFailed()),
-        )
-    }
-}
-
-export const checkDiscoveryStatus = (id, multirunnerData) => {
-    return dispatch => {
-        return fetch(`${BACKEND_URL}/discovery/${id}`, {
-            method: 'GET',
-        }).then(
-            (success) => {
-                return success.json().then(
-                    newStatus => dispatch(onDiscoveryStatusUpdated(id, newStatus)),
-                    error => console.log(error),
-                )
-            },
-            error => console.log(error),
-        ).then(
-            action => {
-                if (!multirunnerData)
-                {
-                    dispatch(updatePipelineGroups(id))
-                }
-                if (!action.payload.status.isFinished) {
-                    window.setTimeout(() => dispatch(checkDiscoveryStatus(id, multirunnerData)), 1000)
-                } else {
-                    return dispatch(onDiscoveryFinished(id, multirunnerData))
-                }
-            },
-        )
-    }
-}
-
-const updatePipelineGroups = (id) => {
-    return dispatch => {
-        fetch(`${BACKEND_URL}/discovery/${id}/pipeline-groups`, {
-            method: 'GET',
-        }).then(
-            (success) => {
-                return success.json().then(
-                    ({pipelineGroups}) => dispatch(onPipelineGroupsUpdated(id, pipelineGroups)),
-                    error => console.log(error),
-                )
-            },
-            error => console.log(error),
-        )
-    }
+    return dispatch => dispatch({ type: 'START_DISCOVERY', payload: postJson('/discovery/start', activeComponentUris) })
 }
 
 export const exportPipeline = (discoveryId, pipelineId) => {
-    return dispatch => {
-        return fetch(`${BACKEND_URL}/discovery/${discoveryId}/execute/${pipelineId}`).then(
-            success => success.json().then(
-                json => {
-                    json.id = discoveryId;
-                    return dispatch(onPipelineExported(json))
-                },
-                error => {
-                }
-            ),
-            error => {
-            }
-        )
-    }
+    return dispatch => dispatch({ type: 'EXPORT_PIPELINE', payload: getJsonPromise(`/discovery/${discoveryId}/execute/${pipelineId}`)})
 }
 
 export const showDataSample = (discoveryId, pipelineId) => ({
     type: 'SHOW_DATASAMPLE_CLICKED',
     payload: {discoveryId, pipelineId}
 })
+*/

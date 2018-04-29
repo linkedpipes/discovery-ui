@@ -10,6 +10,8 @@ import Layout from '../components/layout'
 import PipelineGroups from '../components/pipelineGroups'
 import Button from 'react-md/lib/Buttons/Button'
 import { initStore } from '../stores/discoveryStore'
+import ApiStatus from '../components/apiStatus'
+import AppStatus from '../components/appStatus'
 import { handleMultirunnerStart, getInputsFromIri, getInputs, goToDetail, requestStats } from '../actions/actions'
 
 
@@ -74,7 +76,7 @@ class MultiRunnerPage extends React.Component {
     }
 
     render() {
-        const { multirunnerStatus, inputData, discoveries, csv } = this.props;
+        const { multirunnerStatus, inputData, discoveries, csv, appStatus, apiStatus } = this.props;
         const isRunning = discoveries.inputIris;
         const subtitle = multirunnerStatus.inputIris ?
             `Discoveries are running: ${multirunnerStatus.current+1} out of ${multirunnerStatus.inputIris.length}. Please, wait.` :
@@ -82,6 +84,8 @@ class MultiRunnerPage extends React.Component {
         const hasIris = inputData.iris;
         return (
             <Layout>
+                <ApiStatus status={apiStatus} />
+                <AppStatus status={appStatus} />
                 <Card>
                     <CardTitle
                         title="Discoveries in progress"
@@ -107,6 +111,8 @@ const mapStateToProps = state => ({
     discoveries: state.discoveries,
     multirunnerStatus: state.multirunnerStatus,
     csv: state.csv,
+    apiStatus: state.apiStatus,
+    appStatus: state.appStatus,
 })
 
 const mapDispatchToProps = (dispatch) => {
