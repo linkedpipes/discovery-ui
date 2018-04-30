@@ -3,11 +3,12 @@ import { map, compose } from 'ramda'
 import ApplicationGroup from './applicationGroup'
 
 const PipelineGroups = ({ pipelineGroups, discoveryId }) => (
-    <div>
+    <div key={discoveryId}>
         <br />
         {compose(
             map(applicationGroup => (
-                <div>
+                <div
+                    key={applicationGroup.applicationInstance.uri}>
                     <ApplicationGroup
                         key={applicationGroup.applicationInstance.uri}
                         applicationGroup={applicationGroup}
@@ -19,6 +20,5 @@ const PipelineGroups = ({ pipelineGroups, discoveryId }) => (
         )(pipelineGroups.applicationGroups)}
     </div>
 )
-
 
 export default PipelineGroups

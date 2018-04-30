@@ -7,120 +7,93 @@ import CardActions from 'react-md/lib/Cards/CardActions'
 import Button from 'react-md/lib/Buttons/Button'
 import TextField from 'react-md/lib/TextFields';
 import { initStore } from '../stores/discoveryStore'
-import { fetchBackendStatus, setInputIri, setInput, setListIri, setList, discover } from '../actions/actions'
+import { setInputIri, setInput, setListIri, setList, discover } from '../actions/actions'
 import Layout from '../components/layout'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
-import BackendStatus from '../components/backendStatus'
+import ApiStatus from '../components/apiStatus'
+import AppStatus from '../components/appStatus'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 
 
 class InputPage extends React.Component {
 
-    componentDidMount() {
-        this.props.handleServerStatusPrompt()
-    }
-
     render() {
 
-        const { backendStatus, handleInputIriChange, handleInputChange, handleListIriChange, handleListChange, discover, inputData, status } = this.props;
+        const { apiStatus, appStatus, onInputIriChange, onInputChange, onListIriChange, onListChange, discover, inputData, status } = this.props;
 
         return (
             <Layout>
-                <BackendStatus status={backendStatus.isOnline} />
+                <ApiStatus status={apiStatus} />
+                <AppStatus status={appStatus} />
 
-                {backendStatus.isOnline && 
+                {apiStatus.isOnline && 
                     <div>
-                        {(status.error) && 
-                            <Card>
-                                <CardTitle
-                                    title="Error"
-                                    subtitle="Discovery could not be started"
-                                />
-                                <CardText>
-                                    { status.error }
-                                </CardText>
-                            </Card>
-                        }
-
-                        {(status.discovery.isStarting) ? 
-                            <Card>
-                                <CardTitle
-                                    title="Working"
-                                    subtitle="Discovery is being created, please wait..."
-                                />
-                                <CardText>
-                                    <CircularProgress key="progress" id="discovery_progress"/>
-                                </CardText>
-                            </Card> :
-                            <div>
-                                <Card>
-                                    <CardTitle
-                                        title="Start discovery"
-                                        subtitle="Provide IRI defining a discovery input"
+                        <Card>
+                            <CardTitle
+                                title="Start discovery"
+                                subtitle="Provide IRI defining a discovery input"
+                            />
+                            <CardText>
+                                <form>
+                                    <TextField
+                                        id="inputIri"
+                                        label="Discovery input IRI"
+                                        lineDirection="center"
+                                        placeholder=""
+                                        onChange={onInputIriChange}
                                     />
-                                    <CardText>
-                                        <form>
-                                            <TextField
-                                                id="inputIri"
-                                                label="Discovery input IRI"
-                                                lineDirection="center"
-                                                placeholder=""
-                                                onChange={handleInputIriChange}
-                                            />
 
-                                            <TextField
-                                                id="floating-multiline"
-                                                label="Discovery input"
-                                                lineDirection="right"
-                                                rows={10}
-                                                onChange={handleInputChange}
-                                            />
-                                        </form>
-                                    </CardText>
-                                    <CardActions>
-                                        <Button raised primary onClick={() => discover(inputData)}>
-                                            Discover
-                                        </Button>
-                                    </CardActions>
-                                </Card>
-
-                                <br /><br />
-
-                                <Card>
-                                    <CardTitle
-                                        title="Run multiple discoveries"
-                                        subtitle="Provide IRI defining a list of discovery inputs"
+                                    <TextField
+                                        id="floating-multiline"
+                                        label="Discovery input"
+                                        lineDirection="right"
+                                        rows={10}
+                                        onChange={onInputChange}
                                     />
-                                    <CardText>
-                                        <form>
-                                            <TextField
-                                                id="listIri"
-                                                label="Discovery list IRI"
-                                                lineDirection="center"
-                                                placeholder=""
-                                                onChange={handleListIriChange}
-                                            />
+                                </form>
+                            </CardText>
+                            <CardActions>
+                                <Button raised primary onClick={() => discover(inputData)}>
+                                    Discover
+                                </Button>
+                            </CardActions>
+                        </Card>
 
-                                            <TextField
-                                                id="floating-multiline"
-                                                label="Discovery list"
-                                                lineDirection="right"
-                                                rows={10}
-                                                onChange={handleListChange}
-                                            />
-                                        </form>
-                                    </CardText>
-                                    <CardActions>
-                                        <Link href="/multirunner">
-                                            <Button raised primary>
-                                                Run multiple discoveries
-                                            </Button>
-                                        </Link>
-                                    </CardActions>
-                                </Card>
-                            </div>
-                        }
+                        <br /><br />
+
+                        <Card>
+                            <CardTitle
+                                title="Run multiple discoveries"
+                                subtitle="Provide IRI defining a list of discovery inputs"
+                            />
+                            <CardText>
+                                <form>
+                                    <TextField
+                                        id="listIri"
+                                        label="Discovery list IRI"
+                                        lineDirection="center"
+                                        placeholder=""
+                                        onChange={onListIriChange}
+                                    />
+
+                                    <TextField
+                                        id="floating-multiline"
+                                        label="Discovery list"
+                                        lineDirection="right"
+                                        rows={10}
+                                        onChange={onListChange}
+                                    />
+                                </form>
+                            </CardText>
+                            <CardActions>
+                                <Link href="/multirunner">
+                                    <Button raised primary>
+                                        Run multiple discoveries
+                                    </Button>
+                                </Link>
+                            </CardActions>
+                        </Card>
                     </div>
                 }
             </Layout>
@@ -129,24 +102,23 @@ class InputPage extends React.Component {
 }
 
 InputPage.propTypes = {
-    backendStatus: PropTypes.object.isRequired,
+    apiStatus: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = state => {
     return {
-        backendStatus: state.backendStatus,
+        apiStatus: state.apiStatus,
+        appStatus: state.appStatus,
         inputData: state.inputData,
-        status: state.status
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        handleServerStatusPrompt: () => dispatch(fetchBackendStatus()),
-        handleInputIriChange: (iri) => dispatch(setInputIri(iri)),
-        handleInputChange: (input) => dispatch(setInput(input)),
-        handleListIriChange: (iri) => dispatch(setListIri(iri)),
-        handleListChange: (list) => dispatch(setList(list)),
+        onInputIriChange: (iri) => dispatch(setInputIri(iri)),
+        onInputChange: (input) => dispatch(setInput(input)),
+        onListIriChange: (iri) => dispatch(setListIri(iri)),
+        onListChange: (list) => dispatch(setList(list)),
         discover: (inputData) => dispatch(discover(inputData))
     }
 }

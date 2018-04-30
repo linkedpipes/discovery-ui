@@ -4,19 +4,19 @@ import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
 
 
-const BackendStatus = ({ status }) => (
-    (status !== true) &&
+const ApiStatus = ({ status }) => (
+    (status.isOnline !== true) &&
     <div>
         <Card>
             <CardTitle
-                title="Backend status"
+                title="API status"
             />
             <CardText>
-                {status === null ? "Connecting to backend..." : "Please, start the backend server, it seems to be offline."}
+                The last API call has been rejected, please, check that the API is online.
             </CardText>
         </Card>
         <br />
     </div>
 );
 
-export default BackendStatus
+export default ApiStatus

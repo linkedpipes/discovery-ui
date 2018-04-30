@@ -10,6 +10,8 @@ import Layout from '../components/layout'
 import PipelineGroups from '../components/pipelineGroups'
 import Button from 'react-md/lib/Buttons/Button'
 import { initStore } from '../stores/discoveryStore'
+import ApiStatus from '../components/apiStatus'
+import AppStatus from '../components/appStatus'
 import { handleMultirunnerStart, getInputsFromIri, getInputs, goToDetail, requestStats } from '../actions/actions'
 
 
@@ -26,21 +28,26 @@ class MultiRunnerPage extends React.Component {
         }
     }
 
-    getDiscoveryStatusMessage(discoveryId, discoveries) {
-        if (!discoveryId){
+    getDiscoveryStatusMessage(iri, discoveries) {
+        const discoveryId = discoveries[iri]
+        if (!discoveryId) 
+        {
             return "The discovery is pending. Please, wait.";
         }
 
-        if (!discoveries[discoveryId].status.isFinished) {
+        if (!discoveries[discoveryId].status.isFinished)
+        {
             return `The discovery is currently running and has found ${discoveries[discoveryId].status.pipelineCount} pipelines so far.`;
         }
 
-        if (discoveries[discoveryId].status.isFinished) {
+        if (discoveries[discoveryId].status.isFinished)
+        {
             return `The discovery has finished and found ${discoveries[discoveryId].status.pipelineCount} pipelines.`;
         }
     }
 
-    getDiscoveryAction(discoveryId, discoveries){
+    getDiscoveryAction(iri, discoveries){
+        const discoveryId = discoveries[iri]
         if (discoveryId && discoveries[discoveryId].status.isFinished) {
             return (
                 <Button raised onClick={() => this.props.goToDetail(discoveryId)}>
@@ -49,23 +56,25 @@ class MultiRunnerPage extends React.Component {
             );
         }
 
-        return <CircularProgress/>;
+        return <CircularProgress id={iri} />;
     }
 
-    renderDiscoveryCard(i, discoveries) {
+    renderDiscoveryCard(iri, discoveries) {
         return (
-            <Card key={i}>
+            <Card key={iri}>
                 <CardTitle
-                    title={i}
+                    title={iri}
                     subtitle=""
                 />
                 <CardText>
                     <div>
                         <table width="100%">
-                            <tr>
-                                <td>{this.getDiscoveryStatusMessage(discoveries[i], discoveries)}</td>
-                                <td>{this.getDiscoveryAction(discoveries[i], discoveries)}</td>
-                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td>{this.getDiscoveryStatusMessage(iri, discoveries)}</td>
+                                    <td>{this.getDiscoveryAction(iri, discoveries)}</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                 </CardText>
@@ -74,7 +83,7 @@ class MultiRunnerPage extends React.Component {
     }
 
     render() {
-        const { multirunnerStatus, inputData, discoveries, csv } = this.props;
+        const { multirunnerStatus, inputData, discoveries, csv, appStatus, apiStatus } = this.props;
         const isRunning = discoveries.inputIris;
         const subtitle = multirunnerStatus.inputIris ?
             `Discoveries are running: ${multirunnerStatus.current+1} out of ${multirunnerStatus.inputIris.length}. Please, wait.` :
@@ -82,6 +91,8 @@ class MultiRunnerPage extends React.Component {
         const hasIris = inputData.iris;
         return (
             <Layout>
+                <ApiStatus status={apiStatus} />
+                <AppStatus status={appStatus} />
                 <Card>
                     <CardTitle
                         title="Discoveries in progress"
@@ -93,7 +104,7 @@ class MultiRunnerPage extends React.Component {
                         </Button>
                     </CardText>
                 </Card>
-                {hasIris && inputData.iris.map(i => this.renderDiscoveryCard(i, discoveries))}
+                {hasIris && inputData.iris.map(iri => this.renderDiscoveryCard(iri, discoveries))}
             </Layout>
         )
     }
@@ -107,6 +118,8 @@ const mapStateToProps = state => ({
     discoveries: state.discoveries,
     multirunnerStatus: state.multirunnerStatus,
     csv: state.csv,
+    apiStatus: state.apiStatus,
+    appStatus: state.appStatus,
 })
 
 const mapDispatchToProps = (dispatch) => {

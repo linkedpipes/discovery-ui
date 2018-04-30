@@ -10,6 +10,8 @@ import Layout from '../components/layout'
 import PipelineGroups from '../components/pipelineGroups'
 import Button from 'react-md/lib/Buttons/Button'
 import { initStore } from '../stores/discoveryStore'
+import ApiStatus from '../components/apiStatus'
+import AppStatus from '../components/appStatus'
 import { persistState, checkDiscoveryStatus } from '../actions/actions'
 
 
@@ -29,11 +31,13 @@ class DiscoveryPage extends React.Component {
     }
 
     render() {
-        const { url, discoveries, state, persistState, persisted } = this.props;
+        const { url, discoveries, state, persistState, persisted, appStatus, apiStatus } = this.props;
         const discoveryId = url.query.id
 
         return (
             <Layout>
+                <ApiStatus status={apiStatus} />
+                <AppStatus status={appStatus} />
                 {discoveries[discoveryId] &&
                     <div>
                         <Card>
@@ -78,6 +82,9 @@ const mapStateToProps = state => ({
     inputData: state.inputData,
     discoveries: state.discoveries,
     persisted: state.persisted,
+    apiStatus: state.apiStatus,
+    appStatus: state.appStatus,
+    state: state
 })
 
 const mapDispatchToProps = dispatch => {
