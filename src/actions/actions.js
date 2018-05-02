@@ -47,7 +47,12 @@ export const handleDiscoveryStartWithInputIri = (inputIri, multirunnerData = nul
 }
 
 export const handleDiscoveryStartWithInput = (input) => {
-    return dispatch => dispatch({ type: 'START_DISCOVERY', payload: postText('/discovery/startFromInput', input) })
+    return dispatch => dispatch({
+        type: 'START_DISCOVERY',
+        payload: postText('/discovery/startFromInput', input)
+    }).then(({ value, action }) => {
+        return dispatch(onDiscoveryStartSuccess(value))
+    })
 }
 
 export const discover = (inputData) => dispatch => {
@@ -66,7 +71,7 @@ export const discover = (inputData) => dispatch => {
 export const onDiscoveryStartSuccess = ({ id }, multirunnerData) => dispatch => {
     if(!multirunnerData)
     {
-        goToDetail(id)
+        dispatch(goToDetail(id))
     } else {
         return dispatch(checkDiscoveryStatus(id, multirunnerData))
     }
