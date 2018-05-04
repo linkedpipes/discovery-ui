@@ -28,7 +28,7 @@ class InputPage extends React.Component {
                 <AppStatus status={appStatus} />
 
                 {apiStatus.isOnline && 
-                    <div>
+                    <div class="col-md-6">
                         <Card>
                             <CardTitle
                                 title="Start discovery"

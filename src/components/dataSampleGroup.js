@@ -2,7 +2,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import Button from 'react-md/lib/Buttons/Button'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
-import OutputDataSamplePreview from '../components/outputDataSamplePreview'
 import { exportPipeline, showDataSample } from '../actions/actions'
 
 
@@ -38,7 +37,11 @@ const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, discove
                 }
 
                 <span>
-                <OutputDataSamplePreview dataSample={dataSampleGroup.pipeline.dataSample} />
+                <a href={`${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/ods/service`} target="_blank">
+                    <Button raised>
+                        Show output data sample
+                    </Button>
+                </a>
                 <a href={`${applicationExecutorIri}?service=${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/ods/service`} target="_blank">
                     <Button raised>
                         Show output data sample in app
