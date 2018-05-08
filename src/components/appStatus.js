@@ -7,20 +7,20 @@ import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 
 const AppStatus = ({ status }) => (
     <div>
-        {(status.lastError !== null) &&
+        {(status.error !== null) &&
         <div>
             <Card>
                 <CardTitle
                     title="App status"
                 />
                 <CardText>
-                    The last action has failed: {status.lastError.message}.
+                    The last action has failed: `{status.error.message}`.
                 </CardText>
             </Card>
             <br />
         </div>}
 
-        {(status.isWorking === true) && <CircularProgress id="progress" />}
+        {(status.isLoading === true) && <CircularProgress id="progress" />}
     </div>
 );
 

@@ -5,14 +5,14 @@ import CardText from 'react-md/lib/Cards/CardText'
 
 
 const ApiStatus = ({ status }) => (
-    (status.isOnline !== true) &&
+    (status.error !== null) &&
     <div>
         <Card>
             <CardTitle
                 title="API status"
             />
             <CardText>
-                The last API call has been rejected, please, check that the API is online.
+                The last API call has failed: `{status.error.message}`.
             </CardText>
         </Card>
         <br />

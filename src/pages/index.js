@@ -30,7 +30,7 @@ class IndexPage extends React.Component {
                 <ApiStatus status={apiStatus} />
                 <AppStatus status={appStatus} />
 
-                {apiStatus.isOnline && ((Object.keys(components).length > 0) &&
+                {((Object.keys(components).length > 0) &&
                     <Card>
                         <CardTitle
                             title="Start discovery"

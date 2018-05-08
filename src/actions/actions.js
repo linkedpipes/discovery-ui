@@ -4,7 +4,7 @@ import Router from 'next/router'
 
 function handleFetchJsonResponse(response) {
     if (!response.ok) {
-        return { error: { message: `${response.url} (${response.status} - ${response.statusText}) ${response.body}` } }
+        throw { error: { message: `${response.url} (${response.status} - ${response.statusText})` } };
     }
     return response.json().catch(e => { jsonError: e })
 }

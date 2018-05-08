@@ -27,75 +27,73 @@ class InputPage extends React.Component {
                 <ApiStatus status={apiStatus} />
                 <AppStatus status={appStatus} />
 
-                {apiStatus.isOnline && 
-                    <div class="col-md-6">
-                        <Card>
-                            <CardTitle
-                                title="Start discovery"
-                                subtitle="Provide IRI defining a discovery input"
-                            />
-                            <CardText>
-                                <form>
-                                    <TextField
-                                        id="inputIri"
-                                        label="Discovery input IRI"
-                                        lineDirection="center"
-                                        placeholder=""
-                                        onChange={onInputIriChange}
-                                    />
+                <div>
+                    <Card>
+                        <CardTitle
+                            title="Start discovery"
+                            subtitle="Provide IRI defining a discovery input"
+                        />
+                        <CardText>
+                            <form>
+                                <TextField
+                                    id="inputIri"
+                                    label="Discovery input IRI"
+                                    lineDirection="center"
+                                    placeholder=""
+                                    onChange={onInputIriChange}
+                                />
 
-                                    <TextField
-                                        id="floating-multiline"
-                                        label="Discovery input"
-                                        lineDirection="right"
-                                        rows={10}
-                                        onChange={onInputChange}
-                                    />
-                                </form>
-                            </CardText>
-                            <CardActions>
-                                <Button raised primary onClick={() => discover(inputData)}>
-                                    Discover
+                                <TextField
+                                    id="floating-multiline"
+                                    label="Discovery input"
+                                    lineDirection="right"
+                                    rows={10}
+                                    onChange={onInputChange}
+                                />
+                            </form>
+                        </CardText>
+                        <CardActions>
+                            <Button raised primary onClick={() => discover(inputData)}>
+                                Discover
+                            </Button>
+                        </CardActions>
+                    </Card>
+
+                    <br /><br />
+
+                    <Card>
+                        <CardTitle
+                            title="Run multiple discoveries"
+                            subtitle="Provide IRI defining a list of discovery inputs"
+                        />
+                        <CardText>
+                            <form>
+                                <TextField
+                                    id="listIri"
+                                    label="Discovery list IRI"
+                                    lineDirection="center"
+                                    placeholder=""
+                                    onChange={onListIriChange}
+                                />
+
+                                <TextField
+                                    id="floating-multiline"
+                                    label="Discovery list"
+                                    lineDirection="right"
+                                    rows={10}
+                                    onChange={onListChange}
+                                />
+                            </form>
+                        </CardText>
+                        <CardActions>
+                            <Link href="/multirunner">
+                                <Button raised primary>
+                                    Run multiple discoveries
                                 </Button>
-                            </CardActions>
-                        </Card>
-
-                        <br /><br />
-
-                        <Card>
-                            <CardTitle
-                                title="Run multiple discoveries"
-                                subtitle="Provide IRI defining a list of discovery inputs"
-                            />
-                            <CardText>
-                                <form>
-                                    <TextField
-                                        id="listIri"
-                                        label="Discovery list IRI"
-                                        lineDirection="center"
-                                        placeholder=""
-                                        onChange={onListIriChange}
-                                    />
-
-                                    <TextField
-                                        id="floating-multiline"
-                                        label="Discovery list"
-                                        lineDirection="right"
-                                        rows={10}
-                                        onChange={onListChange}
-                                    />
-                                </form>
-                            </CardText>
-                            <CardActions>
-                                <Link href="/multirunner">
-                                    <Button raised primary>
-                                        Run multiple discoveries
-                                    </Button>
-                                </Link>
-                            </CardActions>
-                        </Card>
-                    </div>
-                }
+                            </Link>
+                        </CardActions>
+                    </Card>
+                </div>
             </Layout>
         )
     }

@@ -6,7 +6,13 @@ import { createLogger } from 'redux-logger'
 import { composeWithDevTools } from 'remote-redux-devtools'
 
 const defaultState = {
-    apiStatus: { isOnline: true },
+    apiStatus: {
+        error: null,
+    },
+    appStatus: {
+        error: null,
+        isLoading: false
+    },
     inputData: {
         iri: null,
         listIri: null,
@@ -18,10 +24,6 @@ const defaultState = {
     discoveries: {},
     persisted: false,
     multirunnerStatus: {},
-    appStatus: {
-        lastError: null,
-        isWorking: false
-    },
 }
 
 const discovery = {
@@ -35,25 +37,21 @@ const discovery = {
 };
 
 export const reducer = (state = defaultState, action) => {
-    
-    if (endsWith('_PENDING', action.type)) {
-        state = assocPath(['appStatus', 'isWorking'], true, state)
-        state = assocPath(['appStatus', 'lastError'], null, state)
-    } else {
-        state = assocPath(['appStatus', 'isWorking'], false, state)
-
-        if (endsWith('_REJECTED', action.type))
-        {
-            return assocPath(['apiStatus', 'isOnline'], false, state)
-        }
-
-        if (action.payload && action.payload.error)
-        {
-            return assocPath(['appStatus', 'lastError'], action.payload.error, state)
-        }
-    }
 
     switch (action.type) {
+        case 'APP_DATA_LOADING_STARTED':
+            return assocPath(['appStatus', 'isLoading'], true, state)
+        case 'APP_DATA_LOADING_FINISHED':
+            return assocPath(['appStatus', 'isLoading'], false, state)
+        case 'APP_ERROR':
+            return assocPath(['appStatus', 'error'], action.payload.error, state)
+        case 'APP_RECOVERED':
+            return assocPath(['appStatus', 'error'], null, state)
+        case 'API_ERROR':
+            return assocPath(['apiStatus', 'error'], action.payload.error, state)
+        case 'API_RECOVERED':
+            return assocPath(['apiStatus', 'error'], null, state)
+
         case 'LIST_COMPONENTS_FULFILLED':
             return assocPath(['inputData', 'components'], action.payload, state)
         case 'INPUT_IRI_CHANGED':
@@ -107,20 +105,46 @@ export const reducer = (state = defaultState, action) => {
     }
 }
 
-/*
-export default function createErrorReporter() {
+
+export default function createErrorHandler() {
     return store => next => action => {
         try {
-            if (endsWith('_REJECTED', action.type)) {
-                console.log("REJECTED")
+            if (endsWith('_REJECTED', action.type))
+            {
+                if (action.payload && action.error && action.payload.message)
+                {
+                    // Thanks, fetch (throws TypeError as payload directly); e.g. CORS.
+                    store.dispatch({ type: 'API_ERROR', payload: { error: action.payload } })
+                }
+                else
+                {
+                    store.dispatch({ type: 'API_ERROR', payload: action.payload })
+                }
+                store.dispatch({ type: 'APP_DATA_LOADING_FINISHED' })
+            }
+            else if (action.payload && action.payload.error && !endsWith('_ERROR', action.type)) 
+            {
+                store.dispatch({ type: 'APP_ERROR', payload: action.payload })
+                store.dispatch({ type: 'APP_DATA_LOADING_FINISHED' })
+                // Not sure I want to stop here, but I think I want to. At least for now.
+                return;
+            }
+            else if (endsWith('_PENDING', action.type))
+            {
+                store.dispatch({ type: 'APP_DATA_LOADING_STARTED' })
+                store.dispatch({ type: 'APP_RECOVERED' })
+                store.dispatch({ type: 'API_RECOVERED' })
+            }
+            else if (endsWith('_FULFILLED', action.type))
+            {
+                store.dispatch({ type: 'APP_DATA_LOADING_FINISHED' })
             }
             return next(action);
         } catch (e) {
-            console.log(e);
+            console.log("!!!!", e);
         }
     };
 }
-*/
 
 export const initStore = (initialState = defaultState) => {
     return createStore(
@@ -130,7 +154,7 @@ export const initStore = (initialState = defaultState) => {
             thunkMiddleware,
             promiseMiddleware(),
             createLogger({ collapsed: true }),
-            //createErrorReporter(),
+            createErrorHandler(),
         )
     )
 }
