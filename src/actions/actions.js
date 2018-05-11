@@ -196,7 +196,7 @@ export function requestStats(discoveries) {
             filter(d => typeof d === 'object')
         )(discoveries)
         
-        return postJson('/requestStats', data).then(r => window.location.href = `${BACKEND_URL}/getStats?id=${r.id}`)
+        return postJson('/statistics/request', data).then(r => window.location.href = `${BACKEND_URL}/statistics/get?id=${r.id}`)
     }
 }
 
