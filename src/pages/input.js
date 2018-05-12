@@ -6,7 +6,7 @@ import CardText from 'react-md/lib/Cards/CardText'
 import CardActions from 'react-md/lib/Cards/CardActions'
 import Button from 'react-md/lib/Buttons/Button'
 import TextField from 'react-md/lib/TextFields';
-import { initStore } from '../stores/discoveryStore'
+import initStore from '../stores/initStore'
 import { setInputIri, setInput, setListIri, setList, discover } from '../actions/actions'
 import Layout from '../components/layout'
 import Link from 'next/link'
@@ -14,7 +14,6 @@ import PropTypes from 'prop-types'
 import ApiStatus from '../components/apiStatus'
 import AppStatus from '../components/appStatus'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
-
 
 class InputPage extends React.Component {
 
