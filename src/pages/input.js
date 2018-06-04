@@ -29,14 +29,14 @@ class InputPage extends React.Component {
                 <div>
                     <Card>
                         <CardTitle
-                            title="Start discovery"
-                            subtitle="Provide IRI defining a discovery input"
+                            title="Run single discovery"
+                            subtitle="Provide discovery IRI or definition"
                         />
                         <CardText>
                             <form>
                                 <TextField
                                     id="inputIri"
-                                    label="Discovery input IRI"
+                                    label="Discovery IRI"
                                     lineDirection="center"
                                     placeholder=""
                                     onChange={onInputIriChange}
@@ -44,7 +44,7 @@ class InputPage extends React.Component {
 
                                 <TextField
                                     id="floating-multiline"
-                                    label="Discovery input"
+                                    label="Discovery definition"
                                     lineDirection="right"
                                     rows={10}
                                     onChange={onInputChange}
@@ -87,7 +87,7 @@ class InputPage extends React.Component {
                         <CardActions>
                             <Link href="/multirunner">
                                 <Button raised primary>
-                                    Run multiple discoveries
+                                    Run experiment
                                 </Button>
                             </Link>
                         </CardActions>
