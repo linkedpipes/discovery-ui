@@ -62,14 +62,14 @@ class InputPage extends React.Component {
 
                     <Card>
                         <CardTitle
-                            title="Run multiple discoveries"
-                            subtitle="Provide IRI defining a list of discovery inputs"
+                            title="Run multiple discoveries as an experiment"
+                            subtitle="Provide experiment IRI or definition"
                         />
                         <CardText>
                             <form>
                                 <TextField
                                     id="listIri"
-                                    label="Discovery list IRI"
+                                    label="Experiment IRI"
                                     lineDirection="center"
                                     placeholder=""
                                     onChange={onListIriChange}
@@ -77,7 +77,7 @@ class InputPage extends React.Component {
 
                                 <TextField
                                     id="floating-multiline"
-                                    label="Discovery list"
+                                    label="Experiment definition"
                                     lineDirection="right"
                                     rows={10}
                                     onChange={onListChange}
