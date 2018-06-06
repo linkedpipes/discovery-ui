@@ -37,7 +37,7 @@ const DataSampleGroup = ({ dataSampleGroup, discoveryId, exportPipeline, discove
                 }
 
                 <span>
-                <a href={`${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/ods/service`} target="_blank">
+                <a href={`${BACKEND_URL}/discovery/${discoveryId}/${dataSampleGroup.pipeline.id}/ods`} target="_blank">
                     <Button raised>
                         Show output data sample
                     </Button>
