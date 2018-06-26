@@ -12,19 +12,16 @@ import Layout from '../components/layout'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 import ApiStatus from '../components/apiStatus'
-import AppStatus from '../components/appStatus'
-import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 
 class InputPage extends React.Component {
 
     render() {
 
-        const { apiStatus, appStatus, onInputIriChange, onInputChange, onListIriChange, onListChange, discover, inputData, status } = this.props;
+        const { apiStatus, appStatus, onInputIriChange, onInputChange, onListIriChange, onListChange, discover, inputData } = this.props;
 
         return (
-            <Layout>
+            <Layout appStatus={appStatus}>
                 <ApiStatus status={apiStatus} />
-                <AppStatus status={appStatus} />
 
                 <div>
                     <Card>

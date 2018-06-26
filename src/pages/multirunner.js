@@ -4,15 +4,11 @@ import Card from 'react-md/lib/Cards/Card'
 import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
 import CircularProgress from 'react-md/lib/Progress/CircularProgress'
-import TextField from 'react-md/lib/TextFields';
-import { values, compose, map, filter, mergeAll } from 'ramda'
 import Layout from '../components/layout'
-import PipelineGroups from '../components/pipelineGroups'
 import Button from 'react-md/lib/Buttons/Button'
 import initStore from '../stores/initStore'
 import ApiStatus from '../components/apiStatus'
-import AppStatus from '../components/appStatus'
-import { handleMultirunnerStart, getInputsFromIri, getInputs, goToDetail, requestStats } from '../actions/actions'
+import { getInputsFromIri, getInputs, goToDetail, requestStats } from '../actions/actions'
 
 
 class MultiRunnerPage extends React.Component {
@@ -83,16 +79,16 @@ class MultiRunnerPage extends React.Component {
     }
 
     render() {
-        const { multirunnerStatus, inputData, discoveries, csv, appStatus, apiStatus } = this.props;
-        const isRunning = discoveries.inputIris;
+        const { multirunnerStatus, inputData, discoveries, apiStatus, appStatus } = this.props;
+        
         const subtitle = multirunnerStatus.inputIris ?
             `Discoveries are running: ${multirunnerStatus.current+1} out of ${multirunnerStatus.inputIris.length}. Please, wait.` :
             'Discoveries are running. Please, wait.';
         const hasIris = inputData.iris;
         return (
-            <Layout>
+            <Layout appStatus={appStatus}>
                 <ApiStatus status={apiStatus} />
-                <AppStatus status={appStatus} />
+                
                 <Card>
                     <CardTitle
                         title="Discoveries in progress"

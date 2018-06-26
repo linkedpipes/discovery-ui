@@ -5,14 +5,12 @@ import CardTitle from 'react-md/lib/Cards/CardTitle'
 import CardText from 'react-md/lib/Cards/CardText'
 import CardActions from 'react-md/lib/Cards/CardActions'
 import Button from 'react-md/lib/Buttons/Button'
-import CircularProgress from 'react-md/lib/Progress/CircularProgress'
 import PropTypes from 'prop-types'
 import DiscoveryInput from '../components/discoveryInput'
 import initStore from '../stores/initStore'
 import { toggleDiscoveryInputItem, handleComponentsSelection, getComponents } from '../actions/actions'
 import Layout from '../components/layout'
 import ApiStatus from '../components/apiStatus'
-import AppStatus from '../components/appStatus'
 
 
 class IndexPage extends React.Component {
@@ -26,9 +24,8 @@ class IndexPage extends React.Component {
         const { apiStatus, appStatus, components, handleToggleDiscoveryInputItem, handleComponentsSelection } = this.props;
 
         return (
-            <Layout>
+            <Layout appStatus={appStatus}>
                 <ApiStatus status={apiStatus} />
-                <AppStatus status={appStatus} />
 
                 {((Object.keys(components).length > 0) &&
                     <Card>

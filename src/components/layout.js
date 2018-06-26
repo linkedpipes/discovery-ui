@@ -2,7 +2,7 @@ import React from 'react'
 import Head from 'next/head'
 import NavBar from '../components/navBar'
 
-export default ({ children, title = 'Discovery UI' }) => (
+export default ({ appStatus, children, title = 'Discovery UI' }) => (
     <div>
         <Head>
             <title>{ title }</title>
@@ -13,7 +13,7 @@ export default ({ children, title = 'Discovery UI' }) => (
             <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Material+Icons' />
         </Head>
         <div>
-            <NavBar />
+            <NavBar appStatus={appStatus} />
             <div style={{ width: '75%', margin: 'auto', paddingTop: '80px' }}>
                 { children }
             </div>
